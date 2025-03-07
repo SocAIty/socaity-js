@@ -1,0 +1,24 @@
+.DS_Store
+node_modules
+# /dist removed dist. Reason integration of microsoft with github allows a direct deploy of static web app after push to main branch. 
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+!.vscode/launch.json
+!.vscode/tasks.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

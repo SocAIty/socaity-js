@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "ESNext",
+      "moduleResolution": "Node",
+      "outDir": "./dist",
+      "declaration": true,
+      "declarationDir": "./dist/types",
+      "sourceMap": true,
+      "strict": true,
+      "esModuleInterop": true
+    },
+    "include": ["sdk/**/*.ts"]
+  }
+  
