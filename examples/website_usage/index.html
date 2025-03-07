@@ -7,13 +7,21 @@
 </head>
 <body>
     <h1>Socaity SDK Test</h1>
-    <button onclick="generate()">Generate Text</button>
+    <button id="generateButton">Generate Text</button>
     <p id="output"></p>
 
 
 </body>
 </html>
 
+<script src="/dist/socaity.umd.js"></script>
+<script>
+  // Ensure that the SDK is available globally as `socaity`
+  document.getElementById('generateButton').onclick = function() {
+    socaity.generateText("Hello from Node.js");
+  }
+</script>
+<!-- 
 
 <script type="module">
     import { socaity } from "../../dist/socaity.es.js";
@@ -23,3 +31,4 @@
         document.getElementById("output").innerText = "hallo affe";
     }
 </script>
+-->
