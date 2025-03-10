@@ -1,4 +1,4 @@
-import { ApiResponse, JobStatus, SocaityJob } from '../../types';
+import { ApiResponse, JobStatus, SocaityJob, JobProgress } from '../../types';
 
 /**
  * Parses API responses into standardized formats
@@ -38,7 +38,6 @@ export class ResponseParser {
       progress: this.parseProgress(response),
       result: response.result || response.output || null,
       error: response.error || null,
-      message: response.message || '',
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -53,13 +52,15 @@ export class ResponseParser {
     // Handle standard format
     const status = (response.status || '').toUpperCase();
     
-    if (status === 'COMPLETED' || status === 'SUCCEEDED') {
+    if (status === 'COMPLETED' || status === 'SUCCEEDED' || status === 'FINISHED') {
       return JobStatus.COMPLETED;
     } else if (status === 'FAILED' || status === 'ERROR') {
       return JobStatus.FAILED;
-    } else if (status === 'IN_PROGRESS' || status === 'PROCESSING' || status === 'RUNNING') {
+    } else if (status === 'IN_PROGRESS' || status === 'PROCESSING' || status === 'RUNNING' || 
+               status === 'BOOTING') {
       return JobStatus.PROCESSING;
-    } else if (status === 'QUEUED' || status === 'PENDING') {
+    } else if (status === 'QUEUED' || status === 'PENDING' || status === 'IN_QUEUE' || 
+               status === 'STARTING') {
       return JobStatus.QUEUED;
     }
     
@@ -69,7 +70,9 @@ export class ResponseParser {
       if (state === 'COMPLETED') return JobStatus.COMPLETED;
       if (state === 'FAILED') return JobStatus.FAILED;
       if (state === 'IN_PROGRESS') return JobStatus.PROCESSING;
-      if (state === 'QUEUED') return JobStatus.QUEUED;
+      if (state === 'IN_QUEUE') return JobStatus.QUEUED;
+      if (state === 'CANCELLED') return JobStatus.FAILED;
+      if (state === 'TIMED_OUT') return JobStatus.FAILED;
     }
     
     return JobStatus.CREATED;
@@ -78,15 +81,33 @@ export class ResponseParser {
   /**
    * Parse progress from different API formats
    */
-  private parseProgress(response: ApiResponse): number {
-    if (typeof response.progress === 'number') {
-      return response.progress;
+  private parseProgress(response: ApiResponse): JobProgress | null {
+    // Extract progress data
+    let progressValue = response.progress || 0.0;
+    let progressMessage = response.message;
+
+    // Handle nested progress info
+    if (typeof progressValue === 'object' && progressValue !== null) {
+      progressMessage = progressValue.message || progressMessage;
+      progressValue = progressValue.progress || 0.0;
     }
-    
-    if (response.status === 'COMPLETED' || response.status === 'SUCCEEDED') {
-      return 1.0;
+
+    // Convert progress to float
+    try {
+      progressValue = typeof progressValue === 'number' ? progressValue : 
+                    progressValue !== null ? parseFloat(String(progressValue)) : 0.0;
+    } catch (error) {
+      progressValue = 0.0;
     }
-    
-    return 0.0;
+
+    // If status is COMPLETED, set progress to 100%
+    if (this.parseStatus(response) === JobStatus.COMPLETED) {
+      progressValue = 1.0;
+    }
+
+    return {
+      progress: progressValue,
+      message: progressMessage
+    };
   }
 }

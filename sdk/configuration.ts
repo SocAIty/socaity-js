@@ -1,40 +1,41 @@
 import { SocaityConfig } from './types';
 
 /**
- * Manages configuration settings for the SDK
+ * Manages global configuration settings for the SDK.
+ * It is a singleton.
  */
 export class Configuration implements SocaityConfig {
+  private static instance: Configuration;
+
   apiKey?: string;
   baseUrl: string;
   pollInterval: number;
   maxRetries: number;
 
-  constructor(config: Partial<SocaityConfig> = {}) {
+  private constructor(config: Partial<SocaityConfig> = {}) {
     this.apiKey = config.apiKey;
-    this.baseUrl = config.baseUrl || 'https://api.socaity.ai/v1';
-    this.pollInterval = config.pollInterval || 1000;
+    this.baseUrl = "http://localhost:8000/v0";
+    this.pollInterval = config.pollInterval || 5000;
     this.maxRetries = config.maxRetries || 3;
   }
 
   /**
-   * Updates configuration with new values
+   * Get the global configuration instance
    */
-  update(config: Partial<SocaityConfig>): void {
-    if (config.apiKey !== undefined) this.apiKey = config.apiKey;
-    if (config.baseUrl !== undefined) this.baseUrl = config.baseUrl;
-    if (config.pollInterval !== undefined) this.pollInterval = config.pollInterval;
-    if (config.maxRetries !== undefined) this.maxRetries = config.maxRetries;
+  static getInstance(): Configuration {
+    if (!Configuration.instance) {
+      Configuration.instance = new Configuration();
+    }
+    return Configuration.instance;
   }
-
   /**
-   * Creates a copy of this configuration
+   * Updates global configuration with new values
    */
-  clone(): Configuration {
-    return new Configuration({
-      apiKey: this.apiKey,
-      baseUrl: this.baseUrl,
-      pollInterval: this.pollInterval,
-      maxRetries: this.maxRetries
-    });
+  static update(config: Partial<SocaityConfig>): void {
+    const instance = Configuration.getInstance();
+    if (config.apiKey !== undefined) instance.apiKey = config.apiKey;
+    if (config.baseUrl !== undefined) instance.baseUrl = config.baseUrl;
+    if (config.pollInterval !== undefined) instance.pollInterval = config.pollInterval;
+    if (config.maxRetries !== undefined) instance.maxRetries = config.maxRetries;
   }
 }

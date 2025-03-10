@@ -1,5 +1,5 @@
 import { Configuration } from '../../configuration';
-import { ApiResponse, RequestOptions } from '../../types';
+import { ApiResponse, EndpointMetadata, RequestOptions } from '../../types';
 
 /**
  * Handles HTTP requests to the Socaity API
@@ -8,14 +8,66 @@ export class RequestHandler {
   private config: Configuration;
   private controller: AbortController;
 
-  constructor(config: Configuration) {
-    this.config = config;
+  constructor() {
+    this.config = Configuration.getInstance();
     this.controller = new AbortController();
   }
 
+  async handleFileUpload(file?: File | Blob | string | null) {
+      if (!file) return;
+      return null;
+  }
+
+
+  matchParams(definingParams: Record<string, any>, params: Record<string, any>): Record<string, any> {
+    const matchedParams: Record<string, any> = {};
+    for (const [key, value] of Object.entries(definingParams)) {
+      if (key in params) {
+        matchedParams[key] = params[key];
+      } else if (value !== undefined) {
+        matchedParams[key] = value;
+      }
+    }
+    return matchedParams;
+  }
+
+  /**
+   * Filters the with endpoint.queryParams matching parameters to Record<string, any>
+   * @param endpoint 
+   * @param params 
+   * @returns 
+   */
+  parseQueryParams(endpoint: EndpointMetadata, params: Record<string, any>): URLSearchParams | Record<string, any> {
+    if (!endpoint.queryParams) { return {}; }
+    const matchedParams = this.matchParams(endpoint.queryParams, params);
+    return new URLSearchParams(matchedParams);
+  }
+
+  /**
+   * Filters the with endpoint.bodyParams matching parameters to Record<string, any>
+   * @param endpoint 
+   * @param params 
+   */
+  parseBodyParams(endpoint: EndpointMetadata, params: Record<string, any>): Record<string, any> {
+    if (!endpoint.bodyParams) { return {}; };
+    return this.matchParams(endpoint.bodyParams, params);
+  }
+
+
+
+    /**
+   * Validates that an API key is available
+   * @private
+   */
+    private validateAPIKey(apiKey?: string) {
+      if (!apiKey) {
+        throw new Error('API key not provided');
+      }
+    }
+
   /**
    * Send a request to the API
-   * @param endpoint - API endpoint path
+   * @param path - API endpoint path
    * @param method - HTTP method (GET, POST, etc)
    * @param params - Request parameters
    * @param apiKey - API key to use for this request
@@ -23,74 +75,45 @@ export class RequestHandler {
    * @returns Promise with the API response
    */
   async sendRequest(
-    endpoint: string,
+    path: string,
     method: 'GET' | 'POST' = 'POST',
-    params: Record<string, any> = {},
+    queryParams: Record<string, any> = {},
+    bodyParams: Record<string, any> = {},
     apiKey?: string,
-    file?: File | Blob | string
+    file?: File | Blob | string | null
   ): Promise<ApiResponse> {
-    const url = `${this.config.baseUrl}/${endpoint}`;
+
+    // validate API key
     const key = apiKey || this.config.apiKey;
-    
-    if (!key) {
-      throw new Error('API key not provided');
-    }
+    this.validateAPIKey(key);
+
+    queryParams = new URLSearchParams(queryParams);
+    const url = `${this.config.baseUrl}/${path}?${queryParams.toString()}`;
 
     const options: RequestOptions = {
       method,
       headers: {
         'Authorization': `Bearer ${key}`,
+        'Content-Type': 'application/json'
       },
       signal: this.controller.signal
     };
 
-    // Handle file uploads
-    if (file) {
-      const formData = new FormData();
-      
-      // Add parameters to form data
-      Object.entries(params).forEach(([key, value]: [string, unknown]) => {
-        if (typeof value === 'object') {
-          formData.append(key, JSON.stringify(value));
-        } else {
-          formData.append(key, String(value));
+    if (method === 'GET') {
+      // try to put body params in the query string. GET only supports query string
+      const bodyKeys = Object.keys(bodyParams);
+      if (bodyKeys.length > 0) {
+        for (const key of bodyKeys) {
+          queryParams.append(key, bodyParams[key]);
         }
-      });
-      
-      // Add file to form data
-      if (typeof file === 'string') {
-        // Handle URL or base64 string
-        formData.append('file', file);
-      } else {
-        // Browser File or Blob object
-        formData.append('file', file);
-      }
-      
-      options.body = formData;
-    } else if (Object.keys(params).length > 0) {
-      if (method === 'GET') {
-        // Convert params to query string for GET requests
-        const queryParams = new URLSearchParams();
-        
-        Object.entries(params).forEach(([key, value]: [string, unknown]) => {
-          if (typeof value === 'object') {
-            queryParams.append(key, JSON.stringify(value));
-          } else {
-            queryParams.append(key, String(value));
-          }
-        });
-        
-        const queryString = queryParams.toString();
-        if (queryString) {
-          endpoint = `${endpoint}?${queryString}`;
-        }
-      } else {
-        // JSON body for non-file POST requests
-        options.headers['Content-Type'] = 'application/json';
-        options.body = JSON.stringify(params);
       }
     }
+    else {
+      // body params in body for POST requests
+      options.body = JSON.stringify(bodyParams);
+    }
 
+    
     try {
       const response = await fetch(url, options);
       
@@ -108,20 +131,13 @@ export class RequestHandler {
     }
   }
 
-  /**
-   * Send a GET request
-   */
-  async get(endpoint: string, params: Record<string, any> = {}, apiKey?: string): Promise<ApiResponse> {
-    return this.sendRequest(endpoint, 'GET', params, apiKey);
+  async request_endpoint(endpoint: EndpointMetadata, params: Record<string, any>, apiKey?: string, file?: File | Blob | string | null): Promise<ApiResponse> {
+    const query_params = this.parseQueryParams(endpoint, params);
+    const body_params = this.parseBodyParams(endpoint, params);
+    file = await this.handleFileUpload(file);
+    return this.sendRequest(endpoint.path, endpoint.method, query_params, body_params, apiKey, file);
   }
 
-  /**
-   * Send a POST request
-   */
-  async post(endpoint: string, params: Record<string, any> = {}, apiKey?: string, file?: File | Blob | string): Promise<ApiResponse> {
-    return this.sendRequest(endpoint, 'POST', params, apiKey, file);
-  }
-  
   /**
    * Abort any ongoing requests
    */

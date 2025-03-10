@@ -2,66 +2,117 @@
  * Represents the status of a job
  */
 export enum JobStatus {
-    CREATED = 'CREATED',
-    QUEUED = 'QUEUED',
-    PROCESSING = 'PROCESSING',
-    COMPLETED = 'COMPLETED',
-    FAILED = 'FAILED'
-  }
-  
-  /**
-   * Represents a job in the Socaity system
-   */
-  export interface SocaityJob {
-    id: string;
-    status: JobStatus;
-    progress: number;
-    message?: string;
-    result?: any;
-    error?: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-  }
-  
-  /**
-   * Generic API response type
-   */
-  export interface ApiResponse {
-    id?: string;
-    status?: string;
-    jobId?: string;
-    progress?: number;
-    message?: string;
-    result?: any;
-    error?: string;
-    [key: string]: any;
-  }
-  
-  /**
-   * Configuration options for the SDK
-   */
-  export interface SocaityConfig {
-    apiKey?: string;
-    baseUrl: string;
-    pollInterval: number;
-    maxRetries: number;
-  }
-  
-  /**
-   * HTTP request options
-   */
-  export interface RequestOptions extends RequestInit {
-    headers: Record<string, string>;
-    body?: FormData | string;
-  }
+  CREATED = 'CREATED',
+  QUEUED = 'QUEUED',
+  PROCESSING = 'PROCESSING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED'
+}
 
-  /**
-   * Text to image options
-   */
-  export interface Text2ImgOptions {
-    apiKey?: string;
-    width?: number;
-    height?: number;
-    steps?: number;
-    seed?: number;
-  }
+/**
+ * Represents the progress of a job
+ */
+export interface JobProgress {
+  progress: number;
+  message?: string;
+}
+
+/**
+ * Represents a job in the Socaity system
+ */
+export interface SocaityJob {
+  id: string;
+  status: JobStatus;
+  progress?: JobProgress | null;
+  result?: any;
+  error?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Generic API response type
+ */
+export interface ApiResponse {
+  id?: string;
+  status?: string;
+  jobId?: string;
+  progress?: JobProgress | null;
+  result?: any;
+  error?: string;
+  [key: string]: any;
+}
+
+/**
+ * Configuration options for the SDK
+ */
+export interface SocaityConfig {
+  apiKey?: string;
+  baseUrl: string;
+  pollInterval: number;
+  maxRetries: number;
+}
+
+/**
+ * HTTP request options
+ */
+export interface RequestOptions extends RequestInit {
+  headers: Record<string, string>;
+  body?: FormData | string;
+}
+
+/**
+ * Chat options
+ */
+export interface ChatOptions {
+  apiKey?: string;
+  model?: string;
+  temperature?: number;
+}
+
+/**
+ * File upload options
+ */
+export interface UploadOptions {
+  apiKey?: string;
+  fileType?: string;
+}
+
+/**
+ * Callback function type for job events
+ */
+export type JobEventCallback<T> = (data: T) => void;
+
+/**
+ * Endpoint metadata
+ */
+export interface EndpointMetadata {
+  path: string;
+  method: 'POST' | 'GET';
+  queryParams?: Record<string, any>;
+  bodyParams?: Record<string, any>;
+  requiresAuth: boolean;
+  acceptsFile: boolean;
+}
+
+/**
+ * Internal job tracking status
+ */
+export enum ProcessingPhase {
+  INITIALIZING = 'INITIALIZING',
+  PREPARING = 'PREPARING',
+  SENDING = 'SENDING',
+  TRACKING = 'TRACKING',
+  PROCESSING_RESULT = 'PROCESSING_RESULT',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED'
+}
+
+/**
+ * Represents the internal job tracking state
+ */
+export interface ProcessingState {
+  phase: ProcessingPhase;
+  progress: number;
+  message?: string;
+}
