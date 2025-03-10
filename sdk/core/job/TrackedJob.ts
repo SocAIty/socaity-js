@@ -201,52 +201,71 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
     }
   }
   
+
+  /**
+   * Poll for job status updates
+   */
+  private async pollJobStatus(): Promise<void> {
+    // Stop polling if job is completed or failed
+    if (this.completed || !this.apiJob.id) {
+      return;
+    }
+
+    try {
+      // Get the latest job state
+      const updatedJob = await this.jobManager.requestHandler.sendRequest('status', 'POST', { job_id: this.apiJob.id });
+      if (!updatedJob) {
+        // Schedule next poll
+        setTimeout(() => this.pollJobStatus(), this.jobManager.config.pollInterval);
+        return;
+      }
+      
+      // Update our copy of the job
+      const parsedJob = this.jobManager.responseParser.parse(updatedJob);
+      this.apiJob = parsedJob;
+      
+      // Update internal state based on API job status
+      this.emitJobUpdate();
+      
+      // Update progress display
+      if (this.verbose) {
+        this.updateProgressDisplay();
+      }
+      
+      if (parsedJob.status === JobStatus.COMPLETED) {
+        this.updateProcessingState(ProcessingPhase.PROCESSING_RESULT, 0.9, 'Processing result');
+        
+        try {
+          // Process the result
+          this.result = parsedJob.result;
+          this.complete();
+        } catch (error) {
+          this.fail(error instanceof Error ? error : new Error(String(error)));
+        }
+      } else if (parsedJob.status === JobStatus.FAILED) {
+        this.updateProcessingState(ProcessingPhase.FAILED, 1, parsedJob.error || 'Job failed');
+        this.fail(new Error(parsedJob.error || 'Job failed with no error message'));
+      } else {
+        // Schedule next poll only if job is still in progress
+        setTimeout(() => this.pollJobStatus(), this.jobManager.config.pollInterval);
+      }
+    } catch (error) {
+      // Don't fail the job immediately on polling errors
+      console.error('Error polling job status:', error);
+      
+      // Keep polling even after an error
+      setTimeout(() => this.pollJobStatus(), this.jobManager.config.pollInterval);
+    }
+  }
+
   /**
    * Start tracking the job
    */
   private startTracking(): void {
     this.updateProcessingState(ProcessingPhase.TRACKING, 0, 'Tracking job status');
     
-    // Set up polling for job status
-    this.pollingInterval = setInterval(async () => {
-      try {
-        // Get the latest job state
-        const updatedJob = await this.jobManager.requestHandler.sendRequest('status', 'POST', { job_id: this.apiJob.id });
-        if (!updatedJob) {
-          return;
-        }
-        
-        // Update our copy of the job
-        const parsedJob = this.jobManager.responseParser.parse(updatedJob);
-        this.apiJob = parsedJob;
-        
-        // Update internal state based on API job status
-        this.emitJobUpdate();
-        
-        // Update progress display
-        if (this.verbose) {
-          this.updateProgressDisplay();
-        }
-        
-        if (parsedJob.status === JobStatus.COMPLETED) {
-          this.updateProcessingState(ProcessingPhase.PROCESSING_RESULT, 0.9, 'Processing result');
-          
-          try {
-            // Process the result
-            this.result = parsedJob.result;
-            this.complete();
-          } catch (error) {
-            this.fail(error instanceof Error ? error : new Error(String(error)));
-          }
-        } else if (parsedJob.status === JobStatus.FAILED) {
-          this.updateProcessingState(ProcessingPhase.FAILED, 1, parsedJob.error || 'Job failed');
-          this.fail(new Error(parsedJob.error || 'Job failed with no error message'));
-        }
-      } catch (error) {
-        // Don't fail the job immediately on polling errors
-        console.error('Error polling job status:', error);
-      }
-    }, this.jobManager.config.pollInterval);
+    // Start the polling cycle immediately
+    this.pollJobStatus();
   }
   
   /**
@@ -276,12 +295,6 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
    * Clean up resources
    */
   private cleanup(): void {
-    if (this.pollingInterval) {
-      clearInterval(this.pollingInterval);
-      this.pollingInterval = null;
-    }
-    
-    // Stop progress display
     this.stopProgressDisplay();
   }
   

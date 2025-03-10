@@ -1,24 +1,65 @@
 import { Configuration } from '../../configuration';
 import { ApiResponse, EndpointMetadata, RequestOptions } from '../../types';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelTokenSource } from 'axios';
 
 /**
- * Handles HTTP requests to the Socaity API
+ * Handles HTTP requests to the Socaity API using Axios
  */
 export class RequestHandler {
   private config: Configuration;
-  private controller: AbortController;
+  private axiosInstance: AxiosInstance;
+  private cancelTokenSource: CancelTokenSource;
 
   constructor() {
     this.config = Configuration.getInstance();
-    this.controller = new AbortController();
+    this.cancelTokenSource = axios.CancelToken.source();
+    
+    // Create axios instance with default configuration
+    this.axiosInstance = axios.create({
+      baseURL: this.config.baseUrl,
+      timeout: 30000, // 30 seconds timeout
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    // Response interceptor for common error handling
+    this.axiosInstance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (axios.isCancel(error)) {
+          return Promise.reject(new Error('Request canceled'));
+        }
+        
+        // Format error message based on response if available
+        if (error.response) {
+          const status = error.response.status;
+          const errorText = typeof error.response.data === 'string' 
+            ? error.response.data 
+            : JSON.stringify(error.response.data);
+          return Promise.reject(new Error(`API error (${status}): ${errorText}`));
+        }
+        
+        return Promise.reject(error);
+      }
+    );
   }
 
+  /**
+   * Handle file upload
+   * @param file File to upload
+   */
   async handleFileUpload(file?: File | Blob | string | null) {
-      if (!file) return;
-      return null;
+    if (!file) return null;
+    // Implementation for file handling would go here
+    return null;
   }
 
-
+  /**
+   * Match request parameters against defined parameters
+   * @param definingParams Expected parameters
+   * @param params Actual parameters
+   */
   matchParams(definingParams: Record<string, any>, params: Record<string, any>): Record<string, any> {
     const matchedParams: Record<string, any> = {};
     for (const [key, value] of Object.entries(definingParams)) {
@@ -32,47 +73,45 @@ export class RequestHandler {
   }
 
   /**
-   * Filters the with endpoint.queryParams matching parameters to Record<string, any>
-   * @param endpoint 
-   * @param params 
-   * @returns 
+   * Parse query parameters for the request
+   * @param endpoint Endpoint metadata
+   * @param params Request parameters
    */
-  parseQueryParams(endpoint: EndpointMetadata, params: Record<string, any>): URLSearchParams | Record<string, any> {
+  parseQueryParams(endpoint: EndpointMetadata, params: Record<string, any>): Record<string, any> {
     if (!endpoint.queryParams) { return {}; }
-    const matchedParams = this.matchParams(endpoint.queryParams, params);
-    return new URLSearchParams(matchedParams);
+    return this.matchParams(endpoint.queryParams, params);
   }
 
   /**
-   * Filters the with endpoint.bodyParams matching parameters to Record<string, any>
-   * @param endpoint 
-   * @param params 
+   * Parse body parameters for the request
+   * @param endpoint Endpoint metadata
+   * @param params Request parameters
    */
   parseBodyParams(endpoint: EndpointMetadata, params: Record<string, any>): Record<string, any> {
-    if (!endpoint.bodyParams) { return {}; };
+    if (!endpoint.bodyParams) { return {}; }
     return this.matchParams(endpoint.bodyParams, params);
   }
 
-
-
-    /**
+  /**
    * Validates that an API key is available
    * @private
    */
-    private validateAPIKey(apiKey?: string) {
-      if (!apiKey) {
-        throw new Error('API key not provided');
-      }
+  private validateAPIKey(apiKey?: string): string {
+    const key = apiKey || this.config.apiKey;
+    if (!key) {
+      throw new Error('API key not provided');
     }
+    return key;
+  }
 
   /**
    * Send a request to the API
-   * @param path - API endpoint path
-   * @param method - HTTP method (GET, POST, etc)
-   * @param params - Request parameters
-   * @param apiKey - API key to use for this request
-   * @param file - Optional file to upload
-   * @returns Promise with the API response
+   * @param path API endpoint path
+   * @param method HTTP method
+   * @param queryParams URL query parameters
+   * @param bodyParams Request body parameters
+   * @param apiKey API key for authentication
+   * @param file Optional file to upload
    */
   async sendRequest(
     path: string,
@@ -82,47 +121,44 @@ export class RequestHandler {
     apiKey?: string,
     file?: File | Blob | string | null
   ): Promise<ApiResponse> {
-
-    // validate API key
-    const key = apiKey || this.config.apiKey;
-    this.validateAPIKey(key);
-
-    queryParams = new URLSearchParams(queryParams);
-    const url = `${this.config.baseUrl}/${path}?${queryParams.toString()}`;
-
-    const options: RequestOptions = {
+    // Validate API key
+    const key = this.validateAPIKey(apiKey);
+    
+    const requestConfig: AxiosRequestConfig = {
       method,
+      url: path,
       headers: {
-        'Authorization': `Bearer ${key}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${key}`
       },
-      signal: this.controller.signal
+      cancelToken: this.cancelTokenSource.token
     };
 
-    if (method === 'GET') {
-      // try to put body params in the query string. GET only supports query string
-      const bodyKeys = Object.keys(bodyParams);
-      if (bodyKeys.length > 0) {
-        for (const key of bodyKeys) {
-          queryParams.append(key, bodyParams[key]);
-        }
-      }
-    }
-    else {
-      // body params in body for POST requests
-      options.body = JSON.stringify(bodyParams);
+    // Handle query parameters
+    if (Object.keys(queryParams).length > 0) {
+      requestConfig.params = queryParams;
     }
 
-    
+    // Handle body parameters for POST requests
+    if (method === 'POST' && Object.keys(bodyParams).length > 0) {
+      requestConfig.data = bodyParams;
+    }
+
+    // If it's a GET request with body params, move them to query params
+    if (method === 'GET' && Object.keys(bodyParams).length > 0) {
+      requestConfig.params = {
+        ...requestConfig.params,
+        ...bodyParams
+      };
+    }
+
+    // Handle file uploads
+    if (file) {
+      // Implementation for file handling would go here
+    }
+
     try {
-      const response = await fetch(url, options);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API error (${response.status}): ${errorText}`);
-      }
-      
-      return await response.json();
+      const response: AxiosResponse = await this.axiosInstance(requestConfig);
+      return response.data;
     } catch (error) {
       if (error instanceof Error) {
         throw error;
@@ -131,18 +167,37 @@ export class RequestHandler {
     }
   }
 
-  async request_endpoint(endpoint: EndpointMetadata, params: Record<string, any>, apiKey?: string, file?: File | Blob | string | null): Promise<ApiResponse> {
-    const query_params = this.parseQueryParams(endpoint, params);
-    const body_params = this.parseBodyParams(endpoint, params);
+  /**
+   * Make a request to a specific endpoint
+   * @param endpoint Endpoint metadata
+   * @param params Request parameters
+   * @param apiKey API key
+   * @param file Optional file to upload
+   */
+  async request_endpoint(
+    endpoint: EndpointMetadata, 
+    params: Record<string, any>, 
+    apiKey?: string, 
+    file?: File | Blob | string | null
+  ): Promise<ApiResponse> {
+    const queryParams = this.parseQueryParams(endpoint, params);
+    const bodyParams = this.parseBodyParams(endpoint, params);
     file = await this.handleFileUpload(file);
-    return this.sendRequest(endpoint.path, endpoint.method, query_params, body_params, apiKey, file);
+    return this.sendRequest(
+      endpoint.path, 
+      endpoint.method, 
+      queryParams, 
+      bodyParams, 
+      apiKey, 
+      file
+    );
   }
 
   /**
    * Abort any ongoing requests
    */
   abort(): void {
-    this.controller.abort();
-    this.controller = new AbortController();
+    this.cancelTokenSource.cancel('Request canceled by user');
+    this.cancelTokenSource = axios.CancelToken.source(); // Create a new token source for future requests
   }
 }
