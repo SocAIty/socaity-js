@@ -9,7 +9,10 @@ export default defineConfig({
       fileName: (format) => `socaity.${format}.js`,
       formats: ["es", "umd"]
     },
-    sourcemap: true
+    sourcemap: true,
+    rollupOptions: {
+      external: ["fs", "fs/promises", "path", "node:path"], // Do not bundle Node.js modules
+    }
   },
   server: {
     port: 5173,
@@ -17,5 +20,8 @@ export default defineConfig({
     watch: {
       usePolling: true
     }
+  },
+  optimizeDeps: {
+    exclude: ["fs", "fs/promises", "path", "node:path"], // Ensure they're not pre-bundled for browser
   }
 });

@@ -1,5 +1,5 @@
 import { RequestHandler } from './RequestHandler';
-import { Configuration } from '../../configuration';
+import { Configuration } from '../configuration';
 import { EndpointMetadata, SocaityJob } from '../../types';
 import { JobManager } from '../job/JobManager';
 import { TrackedJob } from '../job/TrackedJob';

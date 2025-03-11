@@ -16,7 +16,6 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
   private result: T | null = null;
   private error: Error | null = null;
   private completed = false;
-  private pollingInterval: NodeJS.Timeout | null = null;
   private resolvePromise!: (value: T | PromiseLike<T>) => void;
   private rejectPromise!: (reason?: any) => void;
   private promise: Promise<T>;
@@ -221,7 +220,7 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
       }
       
       // Update our copy of the job
-      const parsedJob = this.jobManager.responseParser.parse(updatedJob);
+      const parsedJob = await this.jobManager.responseParser.parse(updatedJob);
       this.apiJob = parsedJob;
       
       // Update internal state based on API job status
@@ -234,10 +233,9 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
       
       if (parsedJob.status === JobStatus.COMPLETED) {
         this.updateProcessingState(ProcessingPhase.PROCESSING_RESULT, 0.9, 'Processing result');
-        
         try {
           // Process the result
-          this.result = parsedJob.result;
+          this.result = await parsedJob.result;
           this.complete();
         } catch (error) {
           this.fail(error instanceof Error ? error : new Error(String(error)));

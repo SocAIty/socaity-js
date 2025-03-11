@@ -1,8 +1,9 @@
-import { Configuration } from '../configuration';
+import { Configuration } from '../core/configuration';
 import { FluxSchnell } from './image/text2image/FluxSchnell';
 import { TrackedJob } from '../core/job/TrackedJob';
 import { SocaityConfig } from '../types';
 import { BaseText2Image } from './image/text2image/BaseText2Image';
+import { MediaFile } from '../media-toolkit-js/MediaFile';
 
 // SimpleAPI class that supports multiple models
 export class SimpleAPI {
@@ -35,7 +36,7 @@ export class SimpleAPI {
    * Generate an image from text using a specified model.
    * Defaults to "fluxSchnell" if no model is provided.
    */
-  text2img(prompt: string, model: string = "flux-schnell", options?: Record<string, any>): Promise<TrackedJob<any>> {
+  text2img(prompt: string, model: string = "flux-schnell", options?: Record<string, any>): Promise<TrackedJob<MediaFile | Array<MediaFile> | any>> {
     const selectedModel = this.getModel(model);
     return selectedModel.text2img(prompt, options);
   }

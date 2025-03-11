@@ -1,4 +1,4 @@
-import { SocaityConfig } from './types';
+import { SocaityConfig } from '../types';
 
 /**
  * Manages global configuration settings for the SDK.

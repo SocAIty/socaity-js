@@ -1,9 +1,10 @@
 import { ApiResponse, JobStatus, SocaityJob, JobProgress } from '../../types';
-
+import { MediaFile } from '../../media-toolkit-js'
 /**
  * Parses API responses into standardized formats
  */
 export class ResponseParser {
+
   /**
    * Check if the response can be parsed by this parser
    */
@@ -31,12 +32,12 @@ export class ResponseParser {
   /**
    * Parse response into standardized job format
    */
-  parse(response: ApiResponse): SocaityJob {
+  async parse(response: ApiResponse): Promise<SocaityJob> {
     const job: SocaityJob = {
       id: response.id || response.jobId || '',
       status: this.parseStatus(response),
       progress: this.parseProgress(response),
-      result: response.result || response.output || null,
+      result: this.parseResult(response.result),
       error: response.error || null,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -109,5 +110,27 @@ export class ResponseParser {
       progress: progressValue,
       message: progressMessage
     };
+  }
+
+  private async parseResult(result?: any): Promise<Array<object> | any | null> {
+    if (result === undefined || result === null) {
+      return null
+    }
+
+    if (typeof result !== 'string' && Array.isArray(result)) {
+      let files = result.map((r: any) => this.parseResult(r));
+      return await Promise.all(files)
+    }
+    // file results or media to download
+    if (typeof result === 'object' || typeof result === 'string') {
+      try {
+        return await new MediaFile().fromAnyWebsafe(result);
+      }
+      catch (e) {
+        return result;
+      }
+    }
+    // Return the result as is for non-file results
+    return result;
   }
 }

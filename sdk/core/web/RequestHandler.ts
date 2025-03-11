@@ -1,4 +1,4 @@
-import { Configuration } from '../../configuration';
+import { Configuration } from '../configuration';
 import { ApiResponse, EndpointMetadata, RequestOptions } from '../../types';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelTokenSource } from 'axios';
 

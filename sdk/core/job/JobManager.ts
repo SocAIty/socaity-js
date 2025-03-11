@@ -1,8 +1,8 @@
 import { RequestHandler } from '../web/RequestHandler';
-import { Configuration } from '../../configuration';
+import { Configuration } from '../configuration';
 import { SocaityJob, JobStatus, EndpointMetadata } from '../../types';
 import { ResponseParser } from '../web/ResponseParser';
-import { MediaHandler } from '../MediaHandler';
+import { MediaFile } from '../../media-toolkit-js'
 
 /**
  * Manages asynchronous jobs for the Socaity API
@@ -12,7 +12,7 @@ export class JobManager {
   config: Configuration;
   private jobs: Map<string, SocaityJob>;
   responseParser: ResponseParser;
-  mediaHandler: MediaHandler;
+  mediaHandler: MediaFile;
   private static instance: JobManager;
 
   /**
@@ -40,7 +40,7 @@ export class JobManager {
     this.config = Configuration.getInstance();
     this.jobs = new Map();
     this.responseParser = new ResponseParser();
-    this.mediaHandler = new MediaHandler();
+    this.mediaHandler = new MediaFile();
   }
 
 
@@ -66,7 +66,7 @@ export class JobManager {
         throw new Error('Unexpected response format from API');
       }
       
-      const job = this.responseParser.parse(response);
+      const job = await this.responseParser.parse(response);
       
       // Store the job
       this.jobs.set(job.id, job);
@@ -106,7 +106,7 @@ export class JobManager {
     while (retries < this.config.maxRetries) {
       try {
         const updatedJob = await this.requestHandler.sendRequest('status', 'POST', { job_id: job.id });
-        const parsedJob = this.responseParser.parse(updatedJob);
+        const parsedJob = await this.responseParser.parse(updatedJob);
         
         // Update our stored job
         this.jobs.set(job.id, parsedJob);
