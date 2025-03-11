@@ -15,7 +15,7 @@
     "machine-learning"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build && vite",
     "build": "vite build",
     "node_usage": "node examples/node_usage/main.js"
   },

@@ -33,7 +33,12 @@ export class Configuration implements SocaityConfig {
    */
   static update(config: Partial<SocaityConfig>): void {
     const instance = Configuration.getInstance();
-    if (config.apiKey !== undefined) instance.apiKey = config.apiKey;
+    if (config.apiKey !== undefined) {
+      if (!config.apiKey.startsWith("sk_") || !(config.apiKey.length == 67)) {
+        throw new Error("API key is wrong. Get your API key from the Socaity https://www.socaity.ai dashboard.");
+      }
+      instance.apiKey = config.apiKey;
+    }
     if (config.baseUrl !== undefined) instance.baseUrl = config.baseUrl;
     if (config.pollInterval !== undefined) instance.pollInterval = config.pollInterval;
     if (config.maxRetries !== undefined) instance.maxRetries = config.maxRetries;

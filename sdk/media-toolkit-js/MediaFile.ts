@@ -344,7 +344,7 @@ export class MediaFile {
    * @param includeDataUri - Whether to include the data URI prefix
    * @returns Base64 encoded string of the file data
    */
-  toBase64(includeDataUri: boolean = false): string {
+  toBase64(includeDataUri: boolean = true): string {
     this._ensureContent();
     
     let base64Data: string;

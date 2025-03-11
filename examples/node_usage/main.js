@@ -1,4 +1,4 @@
-import { socaity } from "../../dist/socaity.es.js";
+import { socaity } from "../../dist/socaity.umd.js";
 // // Load environment variables from the .env file
 import dotenv from 'dotenv';
 dotenv.config();  

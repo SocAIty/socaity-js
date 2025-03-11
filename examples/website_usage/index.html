@@ -3,13 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="https://www.socaity.ai/assets/socaity_icon_no_shoulders_eyes-KUGCADDP.ico" />
     <title>Socaity SDK Example</title>
 </head>
 <body>
     <h1>Socaity SDK Test</h1>
-    <button id="generateButton">Generate Text</button>
-    <p id="output"></p>
 
+    <label for="api_key">API Key</label>
+    <input id="api_key"></input>
+    </br></br>
+    <label for="prompt">Prompt</label>
+    <textarea id="prompt">An image of rick and morty dancing on a server farm.
+    </textarea>
+    </br></br>
+    <button id="generateButton">Generate</button>
+    </br></br>
+    <img src="" id="genImg" alt="Generated Image" width="500px">
 
 </body>
 </html>
@@ -18,17 +27,13 @@
 <script>
   // Ensure that the SDK is available globally as `socaity`
   document.getElementById('generateButton').onclick = function() {
-    socaity.generateText("Hello from Node.js");
+    prompt = document.getElementById('prompt').value;
+    api_key = document.getElementById('api_key').value;
+    socaity.setApiKey(api_key);
+
+    socaity.text2img("An image of rick and morty dancing on a server farm.").then((result) => {
+      let img_base_64 = result[0].toBase64(true);
+      document.getElementById('genImg').src = img_base_64;
+    });
   }
 </script>
-<!-- 
-
-<script type="module">
-    import { socaity } from "../../dist/socaity.es.js";
-
-    async function generate() {
-        //const result = await socaity.generateText("Hello AI");
-        document.getElementById("output").innerText = "hallo affe";
-    }
-</script>
--->
