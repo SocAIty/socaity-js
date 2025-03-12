@@ -1,12 +1,13 @@
-import { socaity } from "../../dist/socaity.umd.js";
+import { socaity } from "../../dist/socaity.es.js";
 // // Load environment variables from the .env file
 import dotenv from 'dotenv';
 dotenv.config();  
 socaity.setApiKey(process.env.SOCAITY_API_KEY);
 
 
-async function test() {
-    let job_img = socaity.text2img("An elephant swimming in a lake");
+async function test_img_generation() {
+    let job_img = socaity.text2img("Rick and Morty swimming in a lake");
+
     let img = await job_img;
     if (Array.isArray(img)) {
         // save all images
@@ -16,5 +17,11 @@ async function test() {
     }
 }
 
+async function test_chat_model() {
+    let result = await socaity.chat("Why is an SDK better than pure API calls? Summarize in three rhyming sentences.");
+    console.log(result);
+}
 
-test();
+
+test_chat_model();
+//test_img_generation();

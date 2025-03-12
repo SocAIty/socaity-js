@@ -1,12 +1,12 @@
 import { ApiClient } from '../../../core/web/APIClient';
 import { TrackedJob } from '../../../core/job/TrackedJob';
 import { FluxText2ImgPostParams, zFluxText2ImgParams } from "../types";
-import { BaseText2Image } from './BaseText2Image';
+import { IText2Image } from './BaseText2Image';
 
 /**
  * Client for the FluxSchnell text-to-image model
  */
-export class FluxSchnell extends ApiClient implements BaseText2Image {
+export class FluxSchnell extends ApiClient implements IText2Image {
   constructor() {
     super('flux-schnell');
   }

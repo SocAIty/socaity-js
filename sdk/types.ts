@@ -46,7 +46,7 @@ export interface ApiResponse {
 /**
  * Configuration options for the SDK
  */
-export interface SocaityConfig {
+export interface IConfig {
   apiKey?: string;
   baseUrl: string;
   pollInterval: number;

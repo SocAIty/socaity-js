@@ -3,48 +3,55 @@ import { Configuration } from '../configuration';
 import { EndpointMetadata, SocaityJob } from '../../types';
 import { JobManager } from '../job/JobManager';
 import { TrackedJob } from '../job/TrackedJob';
-
+import { APIClientFactory } from './APIClientFactory';
 /**
  * Base API client for all Socaity services
  */
-export class ApiClient {
+export interface IAPIClient {
+  readonly name: string;
+  updateConfig(config: Partial<Configuration>): void;
+  getJobs(): SocaityJob[];
+  getJob(jobId: string): SocaityJob | undefined;
+  cancelJob(jobId: string): Promise<boolean>;
+}
+
+
+
+export abstract class ApiClient implements IAPIClient {
   protected requestHandler: RequestHandler;
   protected config: Configuration;
   protected endpoints: Map<string, EndpointMetadata>;
   protected jobManager: JobManager;
   // Name of the API client. Has influence on path variable in the requests which will be formatted like /api/v1/{name}/{endpoint}
-  protected name: string; 
+  public name: string; 
 
   constructor(name: string) {
-    this.name = this.sanitize_path(name);
+    this.name = name;
     this.config = Configuration.getInstance();
     this.requestHandler = new RequestHandler();
     this.endpoints = new Map();
     this.jobManager = JobManager.getInstance(this.requestHandler);
     this.registerEndpoints();
+    APIClientFactory.registerClient(this);
   }
   
-  sanitize_path(path: string): string {
-    // trim trailing and leading slashes \ and /
-    path = path.trim();
-    path = path.replace(/\\/, '/'); // replace ALL backslashes with forward slashes
-    path = path.replace(/^\/+|\/+$/g, ""); // trim leading and trailing slashes
-    return path
+  protected sanitizePath(path: string): string {
+    return path.trim()
+      .replace(/\\/g, '/') // Replace ALL backslashes with forward slashes
+      .replace(/^\/+|\/+$/g, ""); // Trim leading and trailing slashes
   }
 
   /**
    * Register available endpoints for this API client
    * This method should be overridden by subclasses
    */
-  protected registerEndpoints(): void {
-    // Base implementation does nothing
-  }
-  
+  protected abstract registerEndpoints(): void;
+
   /**
    * Register a new endpoint with the client
    */
   protected registerEndpoint(endpoint: EndpointMetadata): void {
-    const sanitzized_path = this.sanitize_path(endpoint.path);
+    const sanitzized_path = this.sanitizePath(endpoint.path);
     endpoint.path = this.name + '/' + sanitzized_path;
     this.endpoints.set(sanitzized_path, endpoint);
   }
@@ -53,7 +60,7 @@ export class ApiClient {
    * Get an endpoint by name
    */
   protected getEndpoint(name: string): EndpointMetadata {
-    name = this.sanitize_path(name);
+    name = this.sanitizePath(name);
     const endpoint = this.endpoints.get(name);
     if (!endpoint) {
       throw new Error(`Unknown endpoint: ${name}`);
@@ -65,11 +72,7 @@ export class ApiClient {
    * Update the client configuration
    */
   updateConfig(config: Partial<Configuration>): void {
-    if (typeof config === 'object') {
-      for (const [key, value] of Object.entries(config)) {
-        (this.config as any)[key] = value;
-      }
-    }
+    Configuration.update(config);
   }
 
   /**

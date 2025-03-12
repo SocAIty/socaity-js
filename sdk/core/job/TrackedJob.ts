@@ -212,7 +212,7 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
 
     try {
       // Get the latest job state
-      const updatedJob = await this.jobManager.requestHandler.sendRequest('status', 'POST', { job_id: this.apiJob.id });
+      const updatedJob = await this.jobManager.requestHandler.sendRequest('status', 'GET', { job_id: this.apiJob.id });
       if (!updatedJob) {
         // Schedule next poll
         setTimeout(() => this.pollJobStatus(), this.jobManager.config.pollInterval);

@@ -1,43 +1,35 @@
 import { Configuration } from '../core/configuration';
 import { FluxSchnell } from './image/text2image/FluxSchnell';
 import { TrackedJob } from '../core/job/TrackedJob';
-import { SocaityConfig } from '../types';
-import { BaseText2Image } from './image/text2image/BaseText2Image';
+import { IText2Image } from './image/text2image/BaseText2Image';
 import { MediaFile } from '../media-toolkit-js/MediaFile';
+import { DeepSeekR1 } from './text/chat/deepseekr1';
+import { APIClientFactory } from '../core/web/APIClientFactory';
+import { IChat } from './text/chat/BaseChat';
 
 // SimpleAPI class that supports multiple models
-export class SimpleAPI {
-  private models: Record<string, BaseText2Image>;
-  private config: Configuration;
+// Register available client types
+APIClientFactory.registerClientType('flux-schnell', FluxSchnell);
+APIClientFactory.registerClientType('deepseek-r1', DeepSeekR1);
 
-  constructor(configOptions: Partial<SocaityConfig> = {}) {
-    // Global configuration
-    this.config = Configuration.getInstance();
+// API.ts - Simplified API interface
+export class SocaityAPI {
+  constructor(configOptions: Partial<Configuration> = {}) {
     Configuration.update(configOptions);
-
-    // Register supported models dynamically
-    this.models = {
-      fluxschnell: new FluxSchnell(),
-      // Future models can be added here
-    };
   }
-
-  /** Get model from registry. Method is case insensitive */
-  getModel(model: string) {
-    model = model.toLowerCase().replace(/[^a-z0-9]/g, "");
-    const selectedModel = Object.keys(this.models).find((key) => key.toLowerCase().replace(/[^a-z0-9]/g, "") === model);
-    if (!selectedModel) {
-      throw new Error(`Model "${model}" not found. Available models: ${Object.keys(this.models).join(", ")}`);
-    }
-    return this.models[selectedModel];
+  
+  async text2img(prompt: string, model: string = 'flux-schnell', options?: Record<string, any>): Promise<TrackedJob<MediaFile | any>> {
+    const client = APIClientFactory.getClient<IText2Image | FluxSchnell>(model);
+    return client.text2img(prompt, options);
   }
-
-  /**
-   * Generate an image from text using a specified model.
-   * Defaults to "fluxSchnell" if no model is provided.
-   */
-  text2img(prompt: string, model: string = "flux-schnell", options?: Record<string, any>): Promise<TrackedJob<MediaFile | Array<MediaFile> | any>> {
-    const selectedModel = this.getModel(model);
-    return selectedModel.text2img(prompt, options);
+  
+  async chat(prompt: string, model: string = 'deepseek-r1', options?: Record<string, any>): Promise<TrackedJob<string | any>> {
+    const client = APIClientFactory.getClient<IChat | DeepSeekR1>(model);
+    return client.chat(prompt, options);
+  }
+  
+  getAvailableModels(): string[] {
+    return APIClientFactory.getAvailableClients();
   }
 }
+
