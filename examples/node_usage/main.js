@@ -6,14 +6,13 @@ socaity.setApiKey(process.env.SOCAITY_API_KEY);
 
 
 async function test_img_generation() {
-    let job_img = socaity.text2img("Rick and Morty swimming in a lake");
+    let images = await socaity.text2img("Rick and Morty swimming in a lake", "flux-schnell", { num_outputs: 3 });
+    if (!Array.isArray(images)) {
+        images = [images]
+    }
 
-    let img = await job_img;
-    if (Array.isArray(img)) {
-        // save all images
-        for (let i = 0; i < img.length; i++) {
-            await img[i].save(`elephant_${i}.jpg`);
-        }
+    for (let i = 0; i < images.length; i++) {
+        await images[i].save(`examples/output/fluxschnell_${i}.jpg`);
     }
 }
 
@@ -23,5 +22,5 @@ async function test_chat_model() {
 }
 
 
-test_chat_model();
-//test_img_generation();
+//test_chat_model();
+test_img_generation();

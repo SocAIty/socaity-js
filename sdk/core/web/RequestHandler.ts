@@ -118,8 +118,8 @@ export class RequestHandler {
     method: 'GET' | 'POST' = 'POST',
     queryParams: Record<string, any> = {},
     bodyParams: Record<string, any> = {},
+    fileParams: Record<string, File | Blob | string> | null = {},
     apiKey?: string,
-    file?: File | Blob | string | null
   ): Promise<ApiResponse> {
     // Validate API key
     const key = this.validateAPIKey(apiKey);
@@ -152,9 +152,9 @@ export class RequestHandler {
     }
 
     // Handle file uploads
-    if (file) {
+   // if (file) {
       // Implementation for file handling would go here
-    }
+    //}
 
     try {
       const response: AxiosResponse = await this.axiosInstance(requestConfig);
@@ -178,18 +178,18 @@ export class RequestHandler {
     endpoint: EndpointMetadata, 
     params: Record<string, any>, 
     apiKey?: string, 
-    file?: File | Blob | string | null
   ): Promise<ApiResponse> {
     const queryParams = this.parseQueryParams(endpoint, params);
     const bodyParams = this.parseBodyParams(endpoint, params);
-    file = await this.handleFileUpload(file);
+    const fileParams = {};
+    //file = await this.handleFileUpload(file);
     return this.sendRequest(
       endpoint.path, 
       endpoint.method, 
       queryParams, 
       bodyParams, 
-      apiKey, 
-      file
+      fileParams,
+      apiKey
     );
   }
 

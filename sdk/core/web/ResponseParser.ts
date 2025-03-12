@@ -1,5 +1,5 @@
 import { ApiResponse, JobStatus, SocaityJob, JobProgress } from '../../types';
-import { MediaFile } from '../../media-toolkit-js'
+import { MediaFile, isFileResult } from '../../media-toolkit-js'
 /**
  * Parses API responses into standardized formats
  */
@@ -122,9 +122,9 @@ export class ResponseParser {
       return await Promise.all(files)
     }
     // file results or media to download
-    if (typeof result === 'object' || typeof result === 'string') {
+    if (isFileResult(result)) {
       try {
-        return await new MediaFile().fromAnyWebsafe(result);
+        return await new MediaFile().fromDict(result);
       }
       catch (e) {
         return result;

@@ -1,7 +1,8 @@
 // src/MediaFile.ts
 
 import axios from 'axios';
-import { FileResult } from '../../../media-toolkit-js/types';
+import { FileResult, isFileResult } from './types';
+
 
 /**
  * A class for standardized file handling across browser and Node.js environments.
@@ -93,7 +94,7 @@ export class MediaFile {
     
 
     // Handle FileResult object
-    if (this._isFileResult(data)) {
+    if (isFileResult(data)) {
       return await this.fromDict(data);
     }
 
@@ -112,14 +113,14 @@ export class MediaFile {
       if (
         !this._isUrl(data)
         && !this._isBase64Data(data)
-        && !this._isFileResult(data)
+        && !isFileResult(data)
       ) {
         throw new Error('Invalid data type for websafe MediaFile');
       }
     }
 
     // Handle FileResult object
-    if (this._isFileResult(data)) {
+    if (isFileResult(data)) {
       return await this.fromAnyWebsafe(data.content);
     }
 
@@ -705,23 +706,6 @@ export class MediaFile {
    */
   protected _isBase64Data(data: string): boolean {
     return data.startsWith('data:') || this._isBase64String(data);
-  }
-
-  /**
-   * Check if an object is a FileResult.
-   * 
-   * @param obj - Object to check
-   * @returns Whether the object is a FileResult
-   * @private
-   */
-  protected _isFileResult(obj: any): boolean {
-    return (
-      obj &&
-      typeof obj === 'object' &&
-      'file_name' in obj &&
-      'content_type' in obj &&
-      'content' in obj
-    );
   }
 
   /**

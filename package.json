@@ -12,7 +12,16 @@
     "sdk",
     "generative-ai",
     "socaity",
-    "machine-learning"
+    "machine-learning",
+    "image-generation",
+    "text-generation",
+    "text-to-image",
+    "text-to-video",
+    "text-to-speech",
+    "transcribe",
+    "text-to-audio",
+    "voice-cloning",
+    "api-client"
   ],
   "scripts": {
     "dev": "vite build && vite",

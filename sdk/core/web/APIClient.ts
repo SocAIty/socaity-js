@@ -2,8 +2,9 @@ import { RequestHandler } from './RequestHandler';
 import { Configuration } from '../configuration';
 import { EndpointMetadata, SocaityJob } from '../../types';
 import { JobManager } from '../job/JobManager';
-import { TrackedJob } from '../job/TrackedJob';
+import { TrackedJob, ParseResultCallback } from '../job/TrackedJob';
 import { APIClientFactory } from './APIClientFactory';
+
 /**
  * Base API client for all Socaity services
  */
@@ -83,15 +84,16 @@ export abstract class ApiClient implements IAPIClient {
    * @param file - Optional file to upload
    * @returns A TrackedJob for monitoring the job
    */
-  protected async submitTrackedJob(
+  protected async submitTrackedJob<T>(
     endpoint: EndpointMetadata,
     params: Record<string, any>,
+    onParseResult?: ParseResultCallback<T> ,
     apiKey?: string,
-    file?: File | Blob | string,
     verbose: boolean = true
-  ): Promise<TrackedJob<any>> {
-    const job = await this.jobManager.submitJob(endpoint, params, apiKey, file);
-    return new TrackedJob(job, this.jobManager, endpoint, verbose);
+
+  ): Promise<TrackedJob<T>> {
+    const job = await this.jobManager.submitJob(endpoint, params, apiKey);
+    return new TrackedJob(job, this.jobManager, endpoint, onParseResult, verbose);
   }
 
   /**

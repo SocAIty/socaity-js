@@ -4,6 +4,8 @@ import { ProgressBarManager, isNode, cliProgress } from './ProgressBarManager';
 
 type EventType = 'completed' | 'failed' | 'progressUpdated' | 'statusUpdated' | 'processingUpdated';
 type EventListener = (...args: any[]) => void;
+// Update callback type to allow transforming the result
+export type ParseResultCallback<T> = (result: T) => T | void | Promise<T> | Promise<void>;
 
 /**
  * Represents a tracked job that handles both internal processing and API job status
@@ -23,8 +25,9 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
   private verbose: boolean;
   private progressBar: any = null;
   private progressBarManager: ProgressBarManager;
+  private parseResultCallbacks: ParseResultCallback<T>[] = [];
   
-  constructor(apiJob: SocaityJob, jobManager: JobManager, endpoint: EndpointMetadata, verbose = true) {
+  constructor(apiJob: SocaityJob, jobManager: JobManager, endpoint: EndpointMetadata, onParseResult?: ParseResultCallback<T>, verbose = true) {
     this.apiJob = apiJob;
     this.jobManager = jobManager;
     this.endpoint = endpoint;
@@ -41,6 +44,11 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
       this.rejectPromise = reject;
     });
     
+    // Register custom parse result callback if provided
+    if (onParseResult) {
+      this.onParseResult(onParseResult);
+    }
+
     // Start tracking immediately
     setTimeout(() => this.startTracking(), 0);
     
@@ -212,7 +220,7 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
 
     try {
       // Get the latest job state
-      const updatedJob = await this.jobManager.requestHandler.sendRequest('status', 'GET', { job_id: this.apiJob.id });
+      const updatedJob = await this.jobManager.requestHandler.sendRequest('status', 'POST', { job_id: this.apiJob.id });
       if (!updatedJob) {
         // Schedule next poll
         setTimeout(() => this.pollJobStatus(), this.jobManager.config.pollInterval);
@@ -236,6 +244,7 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
         try {
           // Process the result
           this.result = await parsedJob.result;
+          this.result = await this.runParseResultCallbacks(this.result);
           this.complete();
         } catch (error) {
           this.fail(error instanceof Error ? error : new Error(String(error)));
@@ -389,6 +398,31 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
     // Call immediately with current processing state
     setTimeout(() => callback(this.processingState), 0);
     return this;
+  }
+
+  /**
+   * Register a callback for custom post-processing of the job result
+   */
+  onParseResult(callback: ParseResultCallback<T>): this {
+    this.parseResultCallbacks.push(callback);
+    return this;
+  }
+
+  /**
+   * Run all registered parse result callbacks
+   */
+  private async runParseResultCallbacks(result: T | any): Promise<T> {
+    let currentResult = result;
+    
+    for (const callback of this.parseResultCallbacks) {
+      const callbackResult = await callback(currentResult);
+      // If callback returns a value (not undefined), use it as the new result
+      if (callbackResult !== undefined) {
+        currentResult = callbackResult as T;
+      }
+    }
+    
+    return currentResult;
   }
   
   /**

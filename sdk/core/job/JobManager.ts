@@ -52,14 +52,13 @@ export class JobManager {
    * @param file - Optional file to include
    * @returns Promise resolving to the created job
    */
-  async submitJob(
+  async submitJob<T>(
     endpoint: EndpointMetadata, 
     params: Record<string, any>, 
-    apiKey?: string,
-    file?: File | string | Blob
+    apiKey?: string
   ): Promise<SocaityJob> {
     try {
-      const response = await this.requestHandler.request_endpoint(endpoint, params, apiKey, file);
+      const response = await this.requestHandler.request_endpoint(endpoint, params, apiKey);
       
       // Parse initial response to get job information
       if (!this.responseParser.canParse(response)) {
