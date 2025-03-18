@@ -23,7 +23,7 @@ A complete list of all models can be found [here](https://www.socaity.ai/APIs/Ov
 
 ## Installation
 
-Install via **npm** or **yarn**:
+Install via **npm**:
 ```sh
 npm install socaity
 ```
