@@ -1,10 +1,15 @@
 {
-  "name": "socaity-sdk",
-  "version": "0.0.0",
+  "name": "socaity",
+  "version": "0.0.1",
   "type": "module",
-  "description": "Socaity SDK for Generative AI APIs",
-  "author": "",
-  "license": "ISC",
+  "description": "SDK for Generative AI. Build AI-powered applications with ease",
+  "author": "Socaity.ai",
+  "license": "MIT",
+  "homepage": "https://www.socaity.ai/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SocAIty/socaity-js"
+  },
   "main": "dist/socaity.umd.js",
   "module": "dist/socaity.es.js",
   "types": "dist/types/index.d.ts",

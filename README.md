@@ -1,12 +1,8 @@
-# Socaity TypeScript SDK
-
+<h1 align="center" style="margin-top:-25px">SocAIty SDK</h1>
 <p align="center">
-  <img align="center" src="docs/socaity_icon.png" height="128" />
+  <img align="center" src="docs/socaity_icon.png" height="200" />
 </p>
-
-<p align="center">
-  <b>Build AI-powered applications with ease</b>
-</p>
+<h2 align="center" style="margin-top:-10px">Build AI-powered applications with ease </h2>
 
 ## Introduction
 
@@ -93,6 +89,8 @@ await image.save("path/to/save.jpg");
 ## Browser & Node.js Support
 - **Node.js:** Works with `import { socaity } from "socaity"`.
 - **Browser:** Use the UMD build: `<script src="socaity.umd.js"></script>`.
+
+You might be interested also in the [python SDK](https://github.com/SocAIty/socaity)
 
 ## Contributing
 We welcome contributions! Submit PRs or report issues in the GitHub Repos or in the Help section of your socaity account.
