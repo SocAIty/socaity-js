@@ -75,12 +75,24 @@ const [img1, img2] = await Promise.all([
 ]);
 ```
 
-### Embedding images
-```typescript
-await image.save("path/to/save.jpg");
-```
+### Working with files (Media-toolkit)
+
+The SocAIty SDK includes a powerful `MediaFile` toolkit that simplifies handling files across both Node.js and browser environments. Look [here](docs/MEDIA_TOOLKIT.md) to learn more about it. 
 
 ### Working directly with your favorite models.
+
+Many models are directly importable by the module. Some of them have specialized methods and parameters which are not included to the simple usage wrapper methods like socaity.text2img. 
+
+
+```typescript
+import { FluxSchnell } from "socaity";
+FluxSchnell.text2img("Rick and Morty swimming in a lake", { 
+    num_outputs: 3,   
+    aspect_ratio: "16:9",
+    num_outputs: 3,
+    num_inference_steps: 5}
+).then(images => { ... });
+```
 
 
 ## Browser & Node.js Support

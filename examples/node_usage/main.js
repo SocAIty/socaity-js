@@ -1,3 +1,7 @@
+import { FluxSchnell } from "socaity";
+FluxSchnell.text2img("Rick and Morty swimming in a lake", { num_outputs: 1 }).then(images => { 'your logic here'});
+
+
 import { socaity } from "../../dist/socaity.es.js";
 // // Load environment variables from the .env file
 import dotenv from 'dotenv';
