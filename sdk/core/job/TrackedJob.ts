@@ -1,6 +1,7 @@
 import { SocaityJob, JobStatus, ProcessingState, ProcessingPhase, JobEventCallback, JobProgress, EndpointMetadata } from '../../types';
 import { JobManager } from './JobManager';
 import { ProgressBarManager, isNode, cliProgress } from './ProgressBarManager';
+import { parseSocaityAPIJobResult } from '../../media-toolkit-js';
 
 type EventType = 'completed' | 'failed' | 'progressUpdated' | 'statusUpdated' | 'processingUpdated';
 type EventListener = (...args: any[]) => void;
@@ -241,15 +242,15 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
         this.updateProcessingState(ProcessingPhase.PROCESSING_RESULT, 0.9, 'Processing result');
         try {
           // Process the result
-          this.result = await parsedJob.result;
+          this.result = await parseSocaityAPIJobResult(updatedJob.result);
           this.result = await this.runParseResultCallbacks(this.result);
           this.complete();
         } catch (error) {
           this.fail(error instanceof Error ? error : new Error(String(error)));
         }
-      } else if (parsedJob.status === JobStatus.FAILED) {
-        this.updateProcessingState(ProcessingPhase.FAILED, 1, parsedJob.error || 'Job failed');
-        this.fail(new Error(parsedJob.error || 'Job failed with no error message'));
+      } else if (updatedJob.status === JobStatus.FAILED) {
+        this.updateProcessingState(ProcessingPhase.FAILED, 1, updatedJob.error || 'Job failed');
+        this.fail(new Error(updatedJob.error || 'Job failed with no error message'));
       } else {
         // Schedule next poll only if job is still in progress
         setTimeout(() => this.pollJobStatus(), this.jobManager.config.pollInterval);

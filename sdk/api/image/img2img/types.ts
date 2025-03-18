@@ -8,7 +8,7 @@ export const allowedMediaTypes = z.union([
   z.instanceof(File),
   z.instanceof(MediaFile),
   // Add Buffer type for Node.js environment
-  z.instanceof(Buffer)
+  // z.instanceof(Buffer)
 ]).default(null);
 
 // Define the parameter schemas for the endpoints

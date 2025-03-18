@@ -27,6 +27,9 @@ async function test_face2face() {
 }
 
 
-test_chat_model();
-test_face2face();
-test_img_generation();
+//let job1 = test_chat_model();
+let job2 = test_face2face();
+//let job3 = test_img_generation();
+
+// Wait for all jobs to finish
+await Promise.all([job1, job2, job3]);

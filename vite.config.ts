@@ -22,6 +22,6 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    exclude: ["fs", "fs/promises", "path", "node:path"], // Ensure they're not pre-bundled for browser
+    exclude: ["fs", "fs/promises", "path", "node:path", "buffer"], // Ensure they're not pre-bundled for browser
   }
 });

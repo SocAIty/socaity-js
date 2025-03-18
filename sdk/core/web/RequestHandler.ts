@@ -254,7 +254,7 @@ export class RequestHandler {
         // Add file parameters to FormData
         Object.entries(fileParams).forEach(([key, value]) => {
           if (value !== undefined && value !== null) {
-            console.log(`File param ${key} type:`, Object.prototype.toString.call(value));
+            //console.log(`File param ${key} type:`, Object.prototype.toString.call(value));
             formData.append(key, value);
           }
         });
@@ -342,7 +342,7 @@ export class RequestHandler {
   }
 
   async refresh_status(job_id: string): Promise<SocaityJob> {
-    const job = this.sendRequest('status', 'POST', { job_id: job_id });
+    const job = await this.sendRequest('status', 'POST', { job_id: job_id });
     return this.responseParser.parse(job);
   }
 

@@ -1,5 +1,6 @@
 import { JobStatus, SocaityJob, JobProgress } from '../../types';
 import { FileResult, MediaFile, isFileResult } from '../../media-toolkit-js';
+import { isPromise } from 'util/types';
 
 /**
  * Parses API responses into standardized SocaityJob format
@@ -51,7 +52,7 @@ export class ResponseParser {
     const id = typeof typedResponse.id === 'string' ? typedResponse.id : '';
     const status = this.parseStatus(typedResponse.status as string);
     const progress = this.parseProgress(typedResponse, status);
-    const result = this.parseResult(typedResponse.result);
+    // const result = this.parseResult(typedResponse.result);
     const error = typeof typedResponse.error === 'string' ? typedResponse.error : null;
     
     // Parse dates with fallbacks
@@ -59,13 +60,13 @@ export class ResponseParser {
     const updatedAt = this.parseDate(typedResponse.updatedAt);
 
     return {
-      id,
-      status,
-      progress,
-      result,
-      error,
-      createdAt,
-      updatedAt
+      id: id,
+      status: status,
+      progress: progress,
+      result: typedResponse.result,
+      error: error,
+      createdAt: createdAt,
+      updatedAt: updatedAt
     };
   }
 
@@ -197,33 +198,6 @@ export class ResponseParser {
     };
   }
 
-  /**
-   * Parse result data from different formats
-   * @param result - Result data to parse
-   */
-  private async parseResult(result: unknown): Promise<unknown> {
-    if (result === undefined || result === null) {
-      return null;
-    }
 
-    // Handle arrays of results
-    if (Array.isArray(result)) {
-      const parsedResults = result.map(item => this.parseResult(item));
-      return Promise.all(parsedResults);
-    }
-    
-    // Handle file results
-    if (isFileResult(result)) {
-      try {
-        return await new MediaFile().fromDict(result as FileResult);
-      } catch (e) {
-        // If media file parsing fails, return the original result
-        return result;
-      }
-    }
-    
-    // Return other result types as is
-    return result;
-  }
 }
 

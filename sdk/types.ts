@@ -19,13 +19,14 @@ export interface JobProgress {
 }
 
 /**
- * Represents a job in the Socaity system
+ * The format of a job object coming from the API
+ * @result - The raw result of the job. This could be an array of urls, a string, or any other type of data. The data is parsed in the "await trackedJob" function.
  */
 export interface SocaityJob {
   id: string;
   status: JobStatus;
   progress?: JobProgress | null;
-  result?: any;
+  result?: any; 
   error?: string | null;
   createdAt?: Date;
   updatedAt?: Date;

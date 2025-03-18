@@ -12,5 +12,5 @@ export interface IFaceSwap extends IAPIClient {
    * @param options - Additional options for the request
    * @returns TrackedJob that resolves to the generated image
    */
-  swapImg2Img(   sourceImg: MediaFile | string, targetImg: MediaFile | string,  options?: Record<string, any>): Promise<TrackedJob<MediaFile | any>>;
+  swapImg2Img(sourceImg: MediaFile | string, targetImg: MediaFile | string,  options?: Record<string, any>): Promise<TrackedJob<MediaFile | any>>;
 }

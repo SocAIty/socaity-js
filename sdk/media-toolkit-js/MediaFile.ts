@@ -100,33 +100,6 @@ export class MediaFile {
     return this;
   }
 
-  /** 
-  Load a file from any supported data type, with additional checks for websafe content.
-  Prevents loading from file paths and malformatted base64 strings.
-  @param data - Data to load (file path, URL, base64 string, etc.)
-  @returns Promise resolving to a MediaFile instance or null
-  */
-  async fromAnyWebsafe(data: any): Promise<MediaFile | null | any> {
-    // String data (path, URL, or base64)
-    if (typeof data === 'string') {
-      if (
-        !isUrl(data)
-        && !isBase64Data(data)
-        && !isFileResult(data)
-      ) {
-        throw new Error('Invalid data type for websafe MediaFile');
-      }
-    }
-
-    // Handle FileResult object
-    if (isFileResult(data)) {
-      return await this.fromAnyWebsafe(data.content);
-    }
-
-    return await this.fromAny(data);
-  }
-
-
   /**
    * Load file from a file path (Node.js only).
    * 
@@ -750,32 +723,3 @@ export class MediaFile {
   }
 }
 
-/**
- * ImageFile class extending MediaFile for image-specific functionality.
- * Example of inheritance capabilities.
- */
-export class ImageFile extends MediaFile {
-  constructor(file_name: string = "image", content_type: string = "image/jpeg") {
-    super(file_name, content_type);
-  }
-
-  /**
-   * Check if the file is an image.
-   * 
-   * @returns Boolean indicating if the file has an image MIME type
-   */
-  isImage(): boolean {
-    return this.content_type.startsWith('image/');
-  }
-
-  /**
-   * Get image dimensions (when implemented in a real-world scenario).
-   * This is just a placeholder showing inheritance capabilities.
-   */
-  async getDimensions(): Promise<{ width: number; height: number } | null> {
-    // This would be implemented with actual image dimension logic
-    // For browser: could create an Image element
-    // For Node.js: could use sharp or another image processing library
-    return null;
-  }
-}

@@ -13,21 +13,22 @@ if (typeof window !== 'undefined') {
   (window as any).socaity = socaity;
 }
 
-// For CommonJS environments
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = socaity;
-  // Add class as a property if needed
-  module.exports.SocaitySDK = SocaitySDK;
+// CommonJS Compatibility
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  module.exports = { socaity, SocaitySDK, APIClientFactory };
+  module.exports.default = socaity; // Ensure proper interop
 }
 
 // Nicer error handling for custom errors which don't require a stack trace
-process.on('uncaughtException', (error) => {
-  // Check if it's our ApiKeyError with hideStack enabled
-  if (error.name === 'ApiKeyError') {
-    console.error(`${error.name}: ${error.message}`);
-    process.exit(1);
-  } else {
-    // For other errors, let Node handle them normally
-    throw error;
-  }
-});
+if (typeof process !== 'undefined') {
+  process.on('uncaughtException', (error) => {
+    // Check if it's our ApiKeyError with hideStack enabled
+    if (error.name === 'ApiKeyError') {
+      console.error(`${error.name}: ${error.message}`);
+      process.exit(1);
+    } else {
+      // For other errors, let Node handle them normally
+      throw error;
+    }
+  })
+}

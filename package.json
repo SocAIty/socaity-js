@@ -1,6 +1,6 @@
 {
   "name": "socaity",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "type": "module",
   "description": "SDK for Generative AI. Build AI-powered applications with ease",
   "author": "Socaity.ai",
@@ -8,11 +8,16 @@
   "homepage": "https://www.socaity.ai/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SocAIty/socaity-js"
+    "url": "git+https://github.com/SocAIty/socaity-js.git"
   },
   "main": "dist/socaity.umd.js",
   "module": "dist/socaity.es.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "sdk",
     "generative-ai",
@@ -30,8 +35,10 @@
   ],
   "scripts": {
     "dev": "vite build && vite",
-    "build": "tsc && vite build",
-    "node_usage": "node examples/node_usage/main.js"
+    "node_usage": "node examples/node_usage/main.js",
+    "build": "vite build",
+    "build:types": "tsc --declaration --emitDeclarationOnly",
+    "prod": "npm run build && npm run build:types"
   },
   "dependencies": {
     "zod": "^3.24.2"

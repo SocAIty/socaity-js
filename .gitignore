@@ -1,6 +1,7 @@
+dist
+
 .DS_Store
 node_modules
-# /dist removed dist. Reason integration of microsoft with github allows a direct deploy of static web app after push to main branch. 
 examples/output
 
 # local env files
