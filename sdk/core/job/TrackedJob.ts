@@ -220,16 +220,14 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
 
     try {
       // Get the latest job state
-      const updatedJob = await this.jobManager.requestHandler.sendRequest('status', 'POST', { job_id: this.apiJob.id });
+      const updatedJob = await this.jobManager.requestHandler.refresh_status(this.apiJob.id);
       if (!updatedJob) {
         // Schedule next poll
         setTimeout(() => this.pollJobStatus(), this.jobManager.config.pollInterval);
         return;
       }
-      
-      // Update our copy of the job
-      const parsedJob = await this.jobManager.responseParser.parse(updatedJob);
-      this.apiJob = parsedJob;
+
+      this.apiJob = updatedJob;
       
       // Update internal state based on API job status
       this.emitJobUpdate();
@@ -239,7 +237,7 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
         this.updateProgressDisplay();
       }
       
-      if (parsedJob.status === JobStatus.COMPLETED) {
+      if (updatedJob.status === JobStatus.COMPLETED) {
         this.updateProcessingState(ProcessingPhase.PROCESSING_RESULT, 0.9, 'Processing result');
         try {
           // Process the result

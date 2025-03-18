@@ -1,109 +1,194 @@
-import { ApiResponse, JobStatus, SocaityJob, JobProgress } from '../../types';
-import { MediaFile, isFileResult } from '../../media-toolkit-js'
+import { JobStatus, SocaityJob, JobProgress } from '../../types';
+import { FileResult, MediaFile, isFileResult } from '../../media-toolkit-js';
+
 /**
- * Parses API responses into standardized formats
+ * Parses API responses into standardized SocaityJob format
  */
 export class ResponseParser {
+  /**
+   * Parse response into standardized job format
+   * @param response - API response object or string
+   * @returns Standardized SocaityJob object
+   */
+  async parse(response: unknown): Promise<SocaityJob> {
+    // Handle null or undefined responses
+    if (response === null || response === undefined) {
+      return this.createErrorJob('No response received');
+    }
+
+    // Handle string responses by attempting to parse as JSON
+    if (typeof response === 'string') {
+      try {
+        const parsedResponse = JSON.parse(response);
+        return this.parseObject(parsedResponse);
+      } catch (e) {
+        // If string is not valid JSON, treat it as a result
+        return {
+          id: '',
+          status: JobStatus.COMPLETED,
+          progress: { progress: 1.0, message: null },
+          result: response,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+      }
+    }
+
+    return this.parseObject(response);
+  }
 
   /**
-   * Check if the response can be parsed by this parser
+   * Parse object responses into SocaityJob
+   * @param response - Object to parse
    */
-  canParse(response: any): boolean {
-    if (!response) return false;
-    
-    // Check for standard Socaity API response format
-    if (response.id || response.jobId) {
-      return true;
+  private async parseObject(response: unknown): Promise<SocaityJob> {
+    if (typeof response !== 'object' || response === null) {
+      return this.createErrorJob('Invalid response format');
     }
+
+    const typedResponse = response as Record<string, unknown>;
     
-    // Check for Runpod API response format
-    if (response.id && (response.status || response.state)) {
-      return true;
-    }
+    const id = typeof typedResponse.id === 'string' ? typedResponse.id : '';
+    const status = this.parseStatus(typedResponse.status as string);
+    const progress = this.parseProgress(typedResponse, status);
+    const result = this.parseResult(typedResponse.result);
+    const error = typeof typedResponse.error === 'string' ? typedResponse.error : null;
     
-    // Check for Replicate API response format
-    if (response.id && response.status && response.urls) {
-      return true;
-    }
-    
-    return false;
+    // Parse dates with fallbacks
+    const createdAt = this.parseDate(typedResponse.createdAt);
+    const updatedAt = this.parseDate(typedResponse.updatedAt);
+
+    return {
+      id,
+      status,
+      progress,
+      result,
+      error,
+      createdAt,
+      updatedAt
+    };
+  }
+
+  /**
+   * Creates a standard error job response
+   * @param errorMessage - Error message to include
+   */
+  private createErrorJob(errorMessage: string): SocaityJob {
+    const now = new Date();
+    return {
+      id: '',
+      status: JobStatus.FAILED,
+      progress: { progress: 0, message: errorMessage },
+      result: null,
+      error: errorMessage,
+      createdAt: now,
+      updatedAt: now
+    };
   }
   
   /**
-   * Parse response into standardized job format
+   * Parse date from various formats
+   * @param dateValue - Date value to parse
    */
-  async parse(response: ApiResponse): Promise<SocaityJob> {
-    const job: SocaityJob = {
-      id: response.id || response.jobId || '',
-      status: this.parseStatus(response),
-      progress: this.parseProgress(response),
-      result: this.parseResult(response.result),
-      error: response.error || null,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+  private parseDate(dateValue: unknown): Date {
+    if (dateValue instanceof Date) {
+      return dateValue;
+    }
     
-    return job;
+    if (typeof dateValue === 'string' || typeof dateValue === 'number') {
+      const parsedDate = new Date(dateValue);
+      if (!isNaN(parsedDate.getTime())) {
+        return parsedDate;
+      }
+    }
+    
+    return new Date();
   }
   
   /**
    * Parse status from different API formats
+   * @param status - Status string to parse
    */
-  private parseStatus(response: ApiResponse): JobStatus {
-    // Handle standard format
-    const status = (response.status || '').toUpperCase();
-    
-    if (status === 'COMPLETED' || status === 'SUCCEEDED' || status === 'FINISHED') {
-      return JobStatus.COMPLETED;
-    } else if (status === 'FAILED' || status === 'ERROR') {
-      return JobStatus.FAILED;
-    } else if (status === 'IN_PROGRESS' || status === 'PROCESSING' || status === 'RUNNING' || 
-               status === 'BOOTING') {
-      return JobStatus.PROCESSING;
-    } else if (status === 'QUEUED' || status === 'PENDING' || status === 'IN_QUEUE' || 
-               status === 'STARTING') {
-      return JobStatus.QUEUED;
+  private parseStatus(status: unknown): JobStatus {
+    if (typeof status !== 'string' || !status) {
+      return JobStatus.UNKNOWN;
     }
+
+    const normalizedStatus = status.toUpperCase();
     
-    // Handle Runpod format
-    if (response.state) {
-      const state = response.state.toUpperCase();
-      if (state === 'COMPLETED') return JobStatus.COMPLETED;
-      if (state === 'FAILED') return JobStatus.FAILED;
-      if (state === 'IN_PROGRESS') return JobStatus.PROCESSING;
-      if (state === 'IN_QUEUE') return JobStatus.QUEUED;
-      if (state === 'CANCELLED') return JobStatus.FAILED;
-      if (state === 'TIMED_OUT') return JobStatus.FAILED;
-    }
-    
-    return JobStatus.CREATED;
+    // Map various status strings to standard JobStatus values
+    const statusMap: Record<string, JobStatus> = {
+      'COMPLETED': JobStatus.COMPLETED,
+      'SUCCEEDED': JobStatus.COMPLETED,
+      'FINISHED': JobStatus.COMPLETED,
+      'CREATED': JobStatus.CREATED,
+      'FAILED': JobStatus.FAILED,
+      'ERROR': JobStatus.FAILED,
+      'IN_PROGRESS': JobStatus.PROCESSING,
+      'PROCESSING': JobStatus.PROCESSING,
+      'RUNNING': JobStatus.PROCESSING,
+      'BOOTING': JobStatus.PROCESSING,
+      'QUEUED': JobStatus.QUEUED,
+      'PENDING': JobStatus.QUEUED,
+      'IN_QUEUE': JobStatus.QUEUED,
+      'STARTING': JobStatus.QUEUED
+    };
+
+    return statusMap[normalizedStatus] || JobStatus.UNKNOWN;
   }
   
   /**
    * Parse progress from different API formats
+   * @param response - Response object containing progress information
+   * @param status - Parsed job status
    */
-  private parseProgress(response: ApiResponse): JobProgress | null {
-    // Extract progress data
-    let progressValue = response.progress || 0.0;
-    let progressMessage = response.message;
-
-    // Handle nested progress info
-    if (typeof progressValue === 'object' && progressValue !== null) {
-      progressMessage = progressValue.message || progressMessage;
-      progressValue = progressValue.progress || 0.0;
+  private parseProgress(response: Record<string, unknown>, status: JobStatus): JobProgress {
+    // Extract progress data - handle both direct progress value or nested object
+    let progressValue: number = 0;
+    let progressMessage: string | null = null;
+    
+    const responseProgress = response.progress;
+    
+    if (typeof responseProgress === 'number') {
+      progressValue = responseProgress;
+    } else if (typeof responseProgress === 'string') {
+      try {
+        progressValue = parseFloat(responseProgress);
+      } catch (error) {
+        progressValue = 0;
+      }
+    } else if (responseProgress && typeof responseProgress === 'object') {
+      const progressObj = responseProgress as Record<string, unknown>;
+      
+      if (typeof progressObj.progress === 'number') {
+        progressValue = progressObj.progress;
+      } else if (typeof progressObj.progress === 'string') {
+        try {
+          progressValue = parseFloat(progressObj.progress);
+        } catch (error) {
+          progressValue = 0;
+        }
+      }
+      
+      progressMessage = typeof progressObj.message === 'string' ? progressObj.message : null;
     }
 
-    // Convert progress to float
-    try {
-      progressValue = typeof progressValue === 'number' ? progressValue : 
-                    progressValue !== null ? parseFloat(String(progressValue)) : 0.0;
-    } catch (error) {
-      progressValue = 0.0;
+    // Handle NaN values
+    if (isNaN(progressValue)) {
+      progressValue = 0;
     }
-
+    
+    // Normalize progress value between 0 and 1
+    progressValue = Math.max(0, Math.min(1, progressValue));
+    
     // If status is COMPLETED, set progress to 100%
-    if (this.parseStatus(response) === JobStatus.COMPLETED) {
+    if (status === JobStatus.COMPLETED) {
       progressValue = 1.0;
+    }
+    
+    // If message was not found in progress object, check top level
+    if (!progressMessage && typeof response.message === 'string') {
+      progressMessage = response.message;
     }
 
     return {
@@ -112,25 +197,33 @@ export class ResponseParser {
     };
   }
 
-  private async parseResult(result?: any): Promise<Array<object> | any | null> {
+  /**
+   * Parse result data from different formats
+   * @param result - Result data to parse
+   */
+  private async parseResult(result: unknown): Promise<unknown> {
     if (result === undefined || result === null) {
-      return null
+      return null;
     }
 
-    if (typeof result !== 'string' && Array.isArray(result)) {
-      let files = result.map((r: any) => this.parseResult(r));
-      return await Promise.all(files)
+    // Handle arrays of results
+    if (Array.isArray(result)) {
+      const parsedResults = result.map(item => this.parseResult(item));
+      return Promise.all(parsedResults);
     }
-    // file results or media to download
+    
+    // Handle file results
     if (isFileResult(result)) {
       try {
-        return await new MediaFile().fromDict(result);
-      }
-      catch (e) {
+        return await new MediaFile().fromDict(result as FileResult);
+      } catch (e) {
+        // If media file parsing fails, return the original result
         return result;
       }
     }
-    // Return the result as is for non-file results
+    
+    // Return other result types as is
     return result;
   }
 }
+

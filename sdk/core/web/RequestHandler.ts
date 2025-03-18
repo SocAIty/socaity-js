@@ -1,5 +1,6 @@
 import { Configuration } from '../configuration';
-import { ApiResponse, EndpointMetadata, RequestOptions } from '../../types';
+import { EndpointMetadata, RequestOptions, SocaityJob } from '../../types';
+import { ResponseParser } from './ResponseParser';
 import { MediaFile } from '../../media-toolkit-js';
 import { FastCloud } from '../../fastCloud/FastCloud';
 
@@ -12,10 +13,12 @@ export class RequestHandler {
   private maxFileUploadLimitMB: number = 1000;
   private fastCloud: FastCloud;
   private abortController: AbortController;
+  private responseParser: ResponseParser;
 
   constructor() {
     this.config = Configuration.getInstance();
     this.abortController = new AbortController();
+    this.responseParser = new ResponseParser();
     
     // Initialize FastCloud for file uploads
     this.fastCloud = new FastCloud({
@@ -213,7 +216,7 @@ export class RequestHandler {
     bodyParams: Record<string, any> = {},
     fileParams: Record<string, any> = {},
     apiKey?: string,
-  ): Promise<ApiResponse | string> {
+  ): Promise<Record<string, string> | string | null> {
     // Validate API key
     const key = this.validateAPIKey(apiKey);
     
@@ -321,12 +324,12 @@ export class RequestHandler {
     endpoint: EndpointMetadata, 
     params: Record<string, any>, 
     apiKey?: string, 
-  ): Promise<ApiResponse | string> {
+  ): Promise<SocaityJob> {
     const queryParams = this.parseQueryParams(endpoint, params);
     const bodyParams = this.parseBodyParams(endpoint, params);
     const fileParams = await this.parseFileParams(endpoint, params);
 
-    return this.sendRequest(
+    const job = await this.sendRequest(
       endpoint.path, 
       endpoint.method, 
       queryParams, 
@@ -334,7 +337,15 @@ export class RequestHandler {
       fileParams,
       apiKey
     );
+
+    return this.responseParser.parse(job);
   }
+
+  async refresh_status(job_id: string): Promise<SocaityJob> {
+    const job = this.sendRequest('status', 'POST', { job_id: job_id });
+    return this.responseParser.parse(job);
+  }
+
 
   /**
    * Abort any ongoing requests

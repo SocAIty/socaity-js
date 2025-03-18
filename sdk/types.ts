@@ -6,7 +6,8 @@ export enum JobStatus {
   QUEUED = 'QUEUED',
   PROCESSING = 'PROCESSING',
   COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED'
+  FAILED = 'FAILED',
+  UNKNOWN = 'UNKNOWN'
 }
 
 /**
@@ -14,7 +15,7 @@ export enum JobStatus {
  */
 export interface JobProgress {
   progress: number;
-  message?: string;
+  message?: string | null;
 }
 
 /**
@@ -26,21 +27,8 @@ export interface SocaityJob {
   progress?: JobProgress | null;
   result?: any;
   error?: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-/**
- * Generic API response type
- */
-export interface ApiResponse {
-  id?: string;
-  status?: string;
-  jobId?: string;
-  progress?: JobProgress | null;
-  result?: any;
-  error?: string;
-  [key: string]: any;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 /**

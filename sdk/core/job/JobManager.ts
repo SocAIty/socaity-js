@@ -11,7 +11,6 @@ export class JobManager {
   requestHandler: RequestHandler;
   config: Configuration;
   private jobs: Map<string, SocaityJob>;
-  responseParser: ResponseParser;
   mediaHandler: MediaFile;
   private static instance: JobManager;
 
@@ -39,7 +38,6 @@ export class JobManager {
     this.requestHandler = requestHandler;
     this.config = Configuration.getInstance();
     this.jobs = new Map();
-    this.responseParser = new ResponseParser();
     this.mediaHandler = new MediaFile();
   }
 
@@ -58,14 +56,7 @@ export class JobManager {
     apiKey?: string
   ): Promise<SocaityJob> {
     try {
-      const response = await this.requestHandler.request_endpoint(endpoint, params, apiKey);
-      
-      // Parse initial response to get job information
-      if (!this.responseParser.canParse(response)) {
-        throw new Error('Unexpected response format from API');
-      }
-      
-      const job = await this.responseParser.parse(response);
+      const job = await this.requestHandler.request_endpoint(endpoint, params, apiKey);
       
       // Store the job
       this.jobs.set(job.id, job);
@@ -104,19 +95,18 @@ export class JobManager {
     
     while (retries < this.config.maxRetries) {
       try {
-        const updatedJob = await this.requestHandler.sendRequest('status', 'POST', { job_id: job.id });
-        const parsedJob = await this.responseParser.parse(updatedJob);
-        
-        // Update our stored job
-        this.jobs.set(job.id, parsedJob);
+        const updatedJob = await this.requestHandler.refresh_status(job.id);
 
-        if (parsedJob.status === JobStatus.COMPLETED) {
-          return parsedJob.result;
+        // Update our stored job
+        this.jobs.set(job.id, updatedJob);
+
+        if (updatedJob.status === JobStatus.COMPLETED) {
+          return updatedJob.result;
           //return this.mediaHandler.processResponse(parsedJob.result);
         }
         
-        if (parsedJob.status === JobStatus.FAILED) {
-          throw new Error(`Job failed: ${parsedJob.error}`);
+        if (updatedJob.status === JobStatus.FAILED) {
+          throw new Error(`Job failed: ${updatedJob.error}`);
         }
         
         // Wait before polling again

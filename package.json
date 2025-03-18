@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "dev": "vite build && vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "node_usage": "node examples/node_usage/main.js"
   },
   "dependencies": {
