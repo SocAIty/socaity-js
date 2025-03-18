@@ -26,8 +26,6 @@ A complete list of all models can be found [here](https://www.socaity.ai/APIs/Ov
 Install via **npm** or **yarn**:
 ```sh
 npm install socaity
-# or
-yarn add socaity
 ```
 
 ## Quick Start
@@ -83,7 +81,6 @@ await image.save("path/to/save.jpg");
 ```
 
 ### Working directly with your favorite models.
-
 
 
 ## Browser & Node.js Support
