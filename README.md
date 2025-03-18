@@ -33,10 +33,7 @@ npm install socaity
 ### 1️⃣ Import the SDK
 ```typescript
 import { socaity } from "socaity";
-import dotenv from "dotenv";
-
-dotenv.config(); // Load API key from .env file
-socaity.setApiKey(process.env.SOCAITY_API_KEY); // we recommend settting the API key with environment variables.
+socaity.setApiKey('sk...'); // we recommend settting the API key with environment variables. 
 ```
 Register and [get your API key](https://www.socaity.ai/signinup?page_state=0)
 
@@ -69,7 +66,7 @@ async function swapFaces() {
 
 ### Running Multiple Requests in Parallel
 ```typescript
-const [img1, img2] = await Promise.all([
+const [img, chat_response] = await Promise.all([
   socaity.text2img("A cyberpunk landscape", "flux-schnell"),
   socaity.chat("Describe quantum physics in simple terms.")
 ]);
