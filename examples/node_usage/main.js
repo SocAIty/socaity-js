@@ -6,7 +6,7 @@ socaity.setApiKey(process.env.SOCAITY_API_KEY);
 
 
 async function test_img_generation() {
-    let images = await socaity.text2img("Rick and Morty swimming in a lake", "flux-schnell", { num_outputs: 3 });
+    let images = await socaity.text2img("Rick and Morty swimming in a lake", "flux-schnell", { num_outputs: 1 });
     if (!Array.isArray(images)) {
         images = [images]
     }
@@ -21,6 +21,12 @@ async function test_chat_model() {
     console.log(result);
 }
 
+async function test_face2face() {
+    let result = await socaity.swapImg2Img("examples/data/test_face_4.jpg", "examples/data/test_face_2.jpg");
+    await result.save("examples/output/face2face.jpg");
+}
 
-//test_chat_model();
+
+test_chat_model();
+test_face2face();
 test_img_generation();

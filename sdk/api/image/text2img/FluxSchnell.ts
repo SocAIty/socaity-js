@@ -1,7 +1,7 @@
 import { ApiClient } from '../../../core/web/APIClient';
 import { TrackedJob } from '../../../core/job/TrackedJob';
-import { FluxText2ImgPostParams, zFluxText2ImgParams } from "../types";
-import { IText2Image } from './BaseText2Image';
+import { FluxText2ImgPostParams, zFluxText2ImgParams } from "./types";
+import { IText2Image } from './IText2Image';
 import { MediaFile } from '../../../media-toolkit-js/MediaFile';
 
 /**
@@ -19,8 +19,6 @@ export class FluxSchnell extends ApiClient implements IText2Image {
       path: 'text2img',
       method: 'POST',
       queryParams: zFluxText2ImgParams.parse({}),
-      requiresAuth: true,
-      acceptsFile: false
     });
   }
   

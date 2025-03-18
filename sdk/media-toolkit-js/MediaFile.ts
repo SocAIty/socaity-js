@@ -1,8 +1,6 @@
 // src/MediaFile.ts
-
-import axios from 'axios';
 import { FileResult, isFileResult } from './types';
-
+import { isUrl, isBase64Data } from './utils';
 
 /**
  * A class for standardized file handling across browser and Node.js environments.
@@ -33,9 +31,9 @@ export class MediaFile {
    * @param data - Data to load (file path, URL, base64 string, etc.)
    * @returns Promise resolving to a MediaFile instance or null
    */
-  static async create(data: any): Promise<MediaFile | null> {
+  static async create(data: any): Promise<MediaFile> {
     if (data === null || data === undefined) {
-      return null;
+      throw new Error('Cannot create MediaFile from null or undefined data');
     }
 
     const mediaFile = new MediaFile();
@@ -49,7 +47,7 @@ export class MediaFile {
    * @param websafe - Prevents loading from file paths and malformatted base64 strings.
    * @returns Promise resolving to a MediaFile instance or null
    */
-  async fromAny(data: any): Promise<MediaFile | null> {
+  async fromAny(data: any): Promise<MediaFile> {
     // Already a MediaFile
     if (data instanceof MediaFile) {
       return data;
@@ -73,22 +71,23 @@ export class MediaFile {
 
     // String data (path, URL, or base64)
     if (typeof data === 'string') {
-      if (this._isUrl(data)) {
+      if (isUrl(data)) {
         return await this.fromUrl(data);
       } 
-      else if (this._isBase64Data(data)) {
+      else if (isBase64Data(data)) {
         return this.fromBase64(data);
       }
-      else if (this._isNode && this._isValidFilePath(data)) {
+      else if (await this._isValidFilePath(data)) {
         return await this.fromFile(data);
       } 
       else {
-          try {
-            return this.fromBase64(data);
-          } catch (e) {
-            console.error(`Could not process string data: ${data.substring(0, 50)}...`);
-            return null;
-          }
+        throw new Error('Invalid data type for MediaFile');
+          //try {
+          //  return this.fromBase64(data);
+          //} catch (e) {
+          //  console.error(`Could not process string data: ${data.substring(0, 50)}...`);
+          //  return null;
+          //}
       }
     }
     
@@ -111,8 +110,8 @@ export class MediaFile {
     // String data (path, URL, or base64)
     if (typeof data === 'string') {
       if (
-        !this._isUrl(data)
-        && !this._isBase64Data(data)
+        !isUrl(data)
+        && !isBase64Data(data)
         && !isFileResult(data)
       ) {
         throw new Error('Invalid data type for websafe MediaFile');
@@ -164,18 +163,21 @@ export class MediaFile {
    */
   async fromUrl(url: string, headers?: Record<string, string>): Promise<MediaFile> {
     try {
-      const response = await axios.get(url, {
-        responseType: 'arraybuffer',
+      const response = await fetch(url, {
         headers: headers || {
           'User-Agent': 'MediaFile/1.0.0'
         }
       });
-
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
       // Get content type from response headers
-      this.content_type = response.headers['content-type'] || 'application/octet-stream';
+      this.content_type = response.headers.get('content-type') || 'application/octet-stream';
       
       // Try to get the filename from Content-Disposition header
-      const contentDisposition = response.headers['content-disposition'];
+      const contentDisposition = response.headers.get('content-disposition');
       if (contentDisposition) {
         const fileNameMatch = contentDisposition.match(/filename=(?:['"]?)([^'";\n]+)/i);
         if (fileNameMatch && fileNameMatch[1]) {
@@ -197,14 +199,14 @@ export class MediaFile {
           this.file_name = 'downloaded_file';
         }
       }
-
-      this._content = response.data;
+  
+      // Get content as ArrayBuffer
+      this._content = await response.arrayBuffer();
       return this;
     } catch (error) {
       throw new Error(`Failed to load file from URL: ${url}. ${(error as Error).message}`);
     }
   }
-
   /**
    * Load file from base64 encoded string.
    * 
@@ -279,7 +281,10 @@ export class MediaFile {
    * @param fileResult - FileResult object with file metadata and base64 content
    * @returns The MediaFile instance
    */
-  async fromDict(fileResult: FileResult): Promise<MediaFile | null> {
+  async fromDict(fileResult: FileResult): Promise<MediaFile> {
+    if (!fileResult.content) {
+      throw new Error('Invalid FileResult object: missing content');
+    }
     this.file_name = fileResult.file_name;
     this.content_type = fileResult.content_type;
     return await this.fromAny(fileResult.content);
@@ -668,44 +673,18 @@ export class MediaFile {
    * @returns Whether the path is valid
    * @private
    */
-  protected _isValidFilePath(path: string): boolean {
+  protected async _isValidFilePath(path: string): Promise<boolean> {
     if (!this._isNode) {
       return false;
     }
     
     try {
-      const fs = require('fs');
-      return fs.existsSync(path) && fs.statSync(path).isFile();
+      const fs = await import('fs/promises');
+      const stats = await fs.stat(path);
+      return stats.isFile();
     } catch (e) {
       return false;
     }
-  }
-
-  /**
-   * Check if a string is a URL.
-   * 
-   * @param url - URL to check
-   * @returns Whether the string is a URL
-   * @private
-   */
-  protected _isUrl(url: string): boolean {
-    try {
-      const parsed = new URL(url);
-      return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-    } catch (e) {
-      return false;
-    }
-  }
-
-  /**
-   * Check if a string is a base64 data URI.
-   * 
-   * @param data - String to check
-   * @returns Whether the string is a base64 data URI
-   * @private
-   */
-  protected _isBase64Data(data: string): boolean {
-    return data.startsWith('data:') || this._isBase64String(data);
   }
 
   /**
@@ -768,17 +747,6 @@ export class MediaFile {
       // For regular ArrayBuffer, we can use slice
       return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
     }
-  }
-  /**
-   * Check if a string appears to be base64 encoded.
-   * 
-   * @param str - String to check
-   * @returns Whether the string is base64 encoded
-   * @private
-   */
-  protected _isBase64String(str: string): boolean {
-    const regex = /^[A-Za-z0-9+/=]+$/;
-    return regex.test(str) && str.length % 4 === 0;
   }
 }
 

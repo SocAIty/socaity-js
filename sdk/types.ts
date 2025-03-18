@@ -91,8 +91,7 @@ export interface EndpointMetadata {
   method: 'POST' | 'GET';
   queryParams?: Record<string, any>;
   bodyParams?: Record<string, any>;
-  requiresAuth: boolean;
-  acceptsFile: boolean;
+  fileParams?: Record<string, any>;
 }
 
 /**

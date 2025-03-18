@@ -33,8 +33,6 @@ export class DeepSeekR1 extends ApiClient implements IChat {
       path: 'chat',
       method: 'POST',
       queryParams: zDeepSeekR1Params.parse({}),
-      requiresAuth: true,
-      acceptsFile: false
     });
   }
 

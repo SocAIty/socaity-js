@@ -27,7 +27,7 @@ export abstract class ApiClient implements IAPIClient {
   public name: string; 
 
   constructor(name: string) {
-    this.name = name;
+    this.name = this.sanitizePath(name);
     this.config = Configuration.getInstance();
     this.requestHandler = new RequestHandler();
     this.endpoints = new Map();
@@ -37,9 +37,17 @@ export abstract class ApiClient implements IAPIClient {
   }
   
   protected sanitizePath(path: string): string {
-    return path.trim()
-      .replace(/\\/g, '/') // Replace ALL backslashes with forward slashes
-      .replace(/^\/+|\/+$/g, ""); // Trim leading and trailing slashes
+    if (!path || typeof path !== 'string') {
+      return '';
+    }
+    return path.toLowerCase()
+    .trim().replace(/\s+/g, ' ') // Replace multiple spaces with single space
+    .replace(/\//g, '-')           // Replace backslashes with forward slashes
+    .replace(/[\s_]/g, '-')      // Replace spaces and underscores with hyphens
+    .replace(/[^a-z0-9\-]/g, '') // Keep only alphanumeric and hyphens
+    .replace(/\-+/g, '-')       // Replace multiple hyphens with single hyphen
+    .replace(/^\-+|\-+$/g, '')         // Remove leading/trailing hyphens
+    .trim()
   }
 
   /**

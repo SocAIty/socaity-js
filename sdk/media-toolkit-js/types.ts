@@ -7,12 +7,12 @@ export interface FileResult {
      * The name of the file
      */
     file_name: string;
-    
+
     /**
      * The MIME type of the file content
      */
-    content_type: string;
     
+    content_type: string;
     /**
      * The file content, typically as a base64 encoded string,
      * but can also be provided as other formats like ArrayBuffer,
