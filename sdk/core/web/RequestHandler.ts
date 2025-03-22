@@ -1,7 +1,7 @@
 import { Configuration } from '../configuration';
 import { EndpointMetadata, RequestOptions, SocaityJob } from '../../types';
 import { ResponseParser } from './ResponseParser';
-import { MediaFile } from '../../media-toolkit-js';
+import { MediaFile, MediaFileFactory } from 'media-toolkit';
 import { FastCloud } from '../../fastCloud/FastCloud';
 
 /**
@@ -93,7 +93,7 @@ export class RequestHandler {
           // Convert to MediaFile
           let mediaFile = value;
           try {
-            mediaFile = value instanceof MediaFile ? value : await MediaFile.create(value);
+            mediaFile = value instanceof MediaFile ? value : await MediaFileFactory.create(value);
           }
           catch (error) {
              console.log(`Failed to convert ${key} to MediaFile`, error);

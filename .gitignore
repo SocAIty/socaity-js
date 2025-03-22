@@ -20,6 +20,7 @@ pnpm-debug.log*
 # Editor directories and files
 .idea
 .vscode
+*.code-workspace
 !.vscode/launch.json
 !.vscode/tasks.json
 *.suo

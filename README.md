@@ -72,9 +72,9 @@ const [img, chat_response] = await Promise.all([
 ]);
 ```
 
-### Working with files (Media-toolkit)
+### Working with files (media-toolkit)
 
-The SocAIty SDK includes a powerful `MediaFile` toolkit that simplifies handling files across both Node.js and browser environments. Look [here](docs/MEDIA_TOOLKIT.md) to learn more about it. 
+The SocAIty SDK includes a powerful toolkit that simplifies handling files across both Node.js and browser environments. Check-out the media-toolkit [docs](https://github.com/SocAIty/media-toolkit-js) to learn more about it. 
 
 ### Working directly with your favorite models.
 

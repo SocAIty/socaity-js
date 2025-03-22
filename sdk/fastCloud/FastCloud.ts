@@ -1,5 +1,5 @@
 // src/FastCloud.ts
-import { MediaFile } from '../media-toolkit-js';
+import { MediaFile } from 'media-toolkit';
 
 /**
  * Configuration interface for FastCloud

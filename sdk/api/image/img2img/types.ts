@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import { MediaFile } from '../../../media-toolkit-js';
+import { ImageFile } from 'media-toolkit';
 
 export const allowedMediaTypes = z.union([
   z.string(),
   z.null(),
   z.instanceof(Blob),
   z.instanceof(File),
-  z.instanceof(MediaFile),
+  z.instanceof(ImageFile),
   // Add Buffer type for Node.js environment
   // z.instanceof(Buffer)
 ]).default(null);

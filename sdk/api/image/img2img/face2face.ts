@@ -1,7 +1,7 @@
 import { IFaceSwap } from './IFaceSwap';
 import { ApiClient } from '../../../core/web/APIClient';
 import { TrackedJob } from '../../../core/job/TrackedJob';
-import { MediaFile } from '../../../media-toolkit-js/MediaFile';
+import { MediaFile, ImageFile, VideoFile } from 'media-toolkit';
 import { z } from 'zod';
 
 import {
@@ -65,15 +65,15 @@ export class Face2Face extends ApiClient implements IFaceSwap {
    * @returns TrackedJob that resolves to the processed image
    */
   async swapImg2Img(
-    sourceImg: MediaFile | string, 
-    targetImg: MediaFile | string, 
+    sourceImg: ImageFile | string, 
+    targetImg: ImageFile | string, 
     options?: Partial<SwapImgToImgParams>
   ): Promise<TrackedJob<MediaFile>> {
     const endpoint = this.getEndpoint('swap-img-to-img');
 
     // Convert inputs to MediaFile if they're strings
-    const sourceMediaFile = await MediaFile.create(sourceImg);
-    const targetMediaFile = await MediaFile.create(targetImg);
+    const sourceMediaFile = await ImageFile.create(sourceImg);
+    const targetMediaFile = await ImageFile.create(targetImg);
 
     if (!sourceMediaFile || !targetMediaFile) {
       throw new Error('Invalid source or target image');
@@ -115,13 +115,13 @@ export class Face2Face extends ApiClient implements IFaceSwap {
    * @returns TrackedJob that resolves to the operation result
    */
   async addFace(
-    image: MediaFile | string, 
+    image: ImageFile | string, 
     faceName: string, 
     save: boolean = true
   ): Promise<TrackedJob<any>> {
     const endpoint = this.getEndpoint('add_face');
 
-    const imageFile = await MediaFile.create(image);
+    const imageFile = await ImageFile.create(image);
     if (!imageFile) {
       throw new Error('Invalid image file');
     }
@@ -143,13 +143,13 @@ export class Face2Face extends ApiClient implements IFaceSwap {
    * @returns TrackedJob that resolves to the processed video
    */
   async swapVideo(
-    targetVideo: MediaFile | string, 
+    targetVideo: VideoFile | string, 
     faceName: string, 
     options?: Partial<Omit<SwapVideoParams, 'face_name'>>
-  ): Promise<TrackedJob<MediaFile>> {
+  ): Promise<TrackedJob<VideoFile>> {
     const endpoint = this.getEndpoint('swap_video');
 
-    const videoFile = await MediaFile.create(targetVideo);
+    const videoFile = await VideoFile.create(targetVideo);
     if (!videoFile) {
       throw new Error('Invalid video file');
     }

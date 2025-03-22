@@ -1,6 +1,4 @@
 import { JobStatus, SocaityJob, JobProgress } from '../../types';
-import { FileResult, MediaFile, isFileResult } from '../../media-toolkit-js';
-import { isPromise } from 'util/types';
 
 /**
  * Parses API responses into standardized SocaityJob format

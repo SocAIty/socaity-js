@@ -1,7 +1,7 @@
 import { ApiClient } from '../../../core/web/APIClient';
 import { TrackedJob } from '../../../core/job/TrackedJob';
 import { DeepSeekR1Params, zDeepSeekR1Params } from "../types";
-import { IChat } from './BaseChat';
+import { IChat } from './IChat';
 
 
 export class DeepSeekResult {

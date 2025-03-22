@@ -2,7 +2,7 @@ import { ApiClient } from '../../../core/web/APIClient';
 import { TrackedJob } from '../../../core/job/TrackedJob';
 import { FluxText2ImgPostParams, zFluxText2ImgParams } from "./types";
 import { IText2Image } from './IText2Image';
-import { MediaFile } from '../../../media-toolkit-js/MediaFile';
+import { ImageFile } from 'media-toolkit';
 
 /**
  * Client for the FluxSchnell text-to-image model
@@ -22,11 +22,11 @@ export class FluxSchnell extends ApiClient implements IText2Image {
     });
   }
   
-  async parseResult(full_output: any): Promise<MediaFile | Array<MediaFile> | any> {
+  async parseResult(full_output: any): Promise<ImageFile | Array<ImageFile> | any> {
     if (Array.isArray(full_output)) {
-      return Promise.all(full_output.map((file) => new MediaFile().fromAny(file)));
+      return Promise.all(full_output.map((file) => new ImageFile().fromAny(file)));
     }
-    return await new MediaFile().fromAny(full_output);
+    return await new ImageFile().fromAny(full_output);
   }
 
   /**
@@ -36,7 +36,7 @@ export class FluxSchnell extends ApiClient implements IText2Image {
    * @param kwargs - Additional options (Python **kwargs equivalent)
    * @returns TrackedJob that resolves to the generated image
    */
-  text2img(text: string, options?: Partial<FluxText2ImgPostParams>): Promise<TrackedJob<MediaFile | Array<MediaFile> | any>> {
+  text2img(text: string, options?: Partial<FluxText2ImgPostParams>): Promise<TrackedJob<ImageFile | Array<ImageFile> | any>> {
     // Get endpoint details
     const endpoint = this.getEndpoint('text2img');
     

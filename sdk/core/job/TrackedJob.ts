@@ -1,7 +1,7 @@
 import { SocaityJob, JobStatus, ProcessingState, ProcessingPhase, JobEventCallback, JobProgress, EndpointMetadata } from '../../types';
 import { JobManager } from './JobManager';
 import { ProgressBarManager, isNode, cliProgress } from './ProgressBarManager';
-import { parseSocaityAPIJobResult } from '../../media-toolkit-js';
+import { parseSocaityAPIJobResult } from 'media-toolkit';
 
 type EventType = 'completed' | 'failed' | 'progressUpdated' | 'statusUpdated' | 'processingUpdated';
 type EventListener = (...args: any[]) => void;
@@ -242,7 +242,7 @@ export class TrackedJob<T = any> implements PromiseLike<T> {
         this.updateProcessingState(ProcessingPhase.PROCESSING_RESULT, 0.9, 'Processing result');
         try {
           // Process the result
-          this.result = await parseSocaityAPIJobResult(updatedJob.result);
+          this.result = await parseSocaityAPIJobResult(updatedJob.result);  // here also media conversion is happening
           this.result = await this.runParseResultCallbacks(this.result);
           this.complete();
         } catch (error) {

@@ -9,7 +9,11 @@
     "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": "./",
+    "paths": {
+      "media-toolkit": ["../media-toolkit-js/src/index.ts"] // note: this is done to develop both packages in one vscode workspace. You can remove this line if you are not doing the same.
+    }
   },
   "include": ["sdk/**/*.ts", "README.md", "LICENSE"],
   "exclude": ["node_modules", "dist"]

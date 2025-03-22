@@ -2,7 +2,7 @@ import { RequestHandler } from '../web/RequestHandler';
 import { Configuration } from '../configuration';
 import { SocaityJob, JobStatus, EndpointMetadata } from '../../types';
 import { ResponseParser } from '../web/ResponseParser';
-import { MediaFile } from '../../media-toolkit-js'
+import { MediaFile } from 'media-toolkit'
 
 /**
  * Manages asynchronous jobs for the Socaity API
