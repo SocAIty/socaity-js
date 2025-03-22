@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { MediaFile, AudioFile } from 'media-toolkit';
+import { MediaFile, AudioFile } from '@socaity/media-toolkit'
 
 export const allowedAudioTypes = z.union([
   z.string(),
@@ -43,7 +43,7 @@ export const zText2VoiceWithEmbeddingFileParams = z.object({
 
 // Define the parameter schemas for voice2embedding endpoint
 export const zVoice2EmbeddingParams = z.object({
-  voice_name: z.string().optional(),
+  voice_name: z.string().optional().default(''),
   save: z.boolean().optional().default(false)
 });
 
@@ -53,7 +53,7 @@ export const zVoice2EmbeddingFileParams = z.object({
 
 // Define the parameter schemas for voice2voice endpoint
 export const zVoice2VoiceParams = z.object({
-  voice_name: z.string().optional(),
+  voice_name: z.string().optional().default(''),
   temp: z.number().optional().default(0.7)
 });
 

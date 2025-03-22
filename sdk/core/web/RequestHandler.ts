@@ -1,7 +1,7 @@
 import { Configuration } from '../configuration';
 import { EndpointMetadata, RequestOptions, SocaityJob } from '../../types';
 import { ResponseParser } from './ResponseParser';
-import { MediaFile, MediaFileFactory } from 'media-toolkit';
+import { MediaFile, MediaFileFactory } from '@socaity/media-toolkit'
 import { FastCloud } from '../../fastCloud/FastCloud';
 
 /**
@@ -22,7 +22,7 @@ export class RequestHandler {
     
     // Initialize FastCloud for file uploads
     this.fastCloud = new FastCloud({
-      uploadEndpoint: `${this.config.baseUrl}/v0/files`,
+      uploadEndpoint: `${this.config.baseUrl}/files`,
       apiKey: this.config.apiKey ? this.config.apiKey : ''
     });
   }
@@ -115,21 +115,13 @@ export class RequestHandler {
       
       // Decide whether to upload or convert to base64
       if (totalSizeMB > this.uploadFileThresholdMB) {
-        // Bulk upload if there are multiple files
-        if (Object.keys(mediaFiles).length > 1) {
           const fileArray = Object.values(mediaFiles);
-          const urls = await this.fastCloud.upload(fileArray) as string[];
+          const urls = await this.fastCloud.upload(fileArray);
           
           // Map the URLs back to the keys
           Object.keys(mediaFiles).forEach((key, index) => {
             result[key] = urls[index];
           });
-        } else {
-          // Upload files individually
-          for (const [key, mediaFile] of Object.entries(mediaFiles)) {
-            result[key] = await this.fastCloud.upload(mediaFile) as string;
-          }
-        }
       } else {
         // Convert all files to blob so that they can be sent as multipart form data
         for (const [key, mediaFile] of Object.entries(mediaFiles)) {
@@ -152,6 +144,8 @@ export class RequestHandler {
     if (!key) {
       throw new Error('API key not provided');
     }
+    this.fastCloud.setApiKey(key);
+
     return key;
   }
 

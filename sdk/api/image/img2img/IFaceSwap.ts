@@ -1,6 +1,6 @@
 import { TrackedJob } from '../../../core/job/TrackedJob';
 import { IAPIClient } from '../../../core/web/APIClient';
-import { ImageFile } from 'media-toolkit';
+import { ImageFile } from '@socaity/media-toolkit'
 
 /**
  * Base interface for text-to-image models

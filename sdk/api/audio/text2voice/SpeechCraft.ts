@@ -2,7 +2,7 @@ import { IText2Voice } from './IText2Voice';
 import { IVoice2Voice } from './IVoice2Voice';
 import { ApiClient } from '../../../core/web/APIClient';
 import { TrackedJob } from '../../../core/job/TrackedJob';
-import { MediaFile, AudioFile } from 'media-toolkit';
+import { MediaFile, AudioFile } from '@socaity/media-toolkit'
 import { z } from 'zod';
 
 import {
@@ -134,6 +134,7 @@ export class SpeechCraft extends ApiClient implements IText2Voice, IVoice2Voice 
       if (audio.length === 0) {
         throw new Error('Empty audio array provided');
       }
+      console.log('For now creating an embedding of multiple audio files is not supported. Only the first audio file will be used.');
       audioFile = await AudioFile.create(audio[0]);
     } else {
       audioFile = await AudioFile.create(audio);
@@ -143,7 +144,14 @@ export class SpeechCraft extends ApiClient implements IText2Voice, IVoice2Voice 
       throw new Error('Invalid audio file');
     }
 
+
     const queryParams = zVoice2EmbeddingParams.parse(options || {});
+
+    // Ensure voice_name is included in queryParams. Generate a random new one if not provided
+    if (!queryParams.voice_name || queryParams.voice_name.length === 0) {
+      queryParams.voice_name = `new_speaker_${Math.random().toString(36).substring(2, 8)}`;
+    }
+
     const fileParams = zVoice2EmbeddingFileParams.parse({ audio_file: audioFile });
     
     const params = { ...queryParams, ...fileParams };
@@ -159,7 +167,7 @@ export class SpeechCraft extends ApiClient implements IText2Voice, IVoice2Voice 
    */
   async voice2voice(
     audio: AudioFile | Array<AudioFile> | string | Array<string>,
-    source?: MediaFile | AudioFile | string,
+    targetVoice?: MediaFile | AudioFile | string,
     options?: Partial<z.infer<typeof zVoice2VoiceParams>>
   ): Promise<TrackedJob<AudioFile>> {
     const endpoint = this.getEndpoint('voice2voice');
@@ -170,21 +178,19 @@ export class SpeechCraft extends ApiClient implements IText2Voice, IVoice2Voice 
     }
 
     let queryParams: Partial<z.infer<typeof zVoice2VoiceParams>> = { ...options };
-    
-    // If source is provided as MediaFile or AudioFile or file path/URL, 
-    // convert it to an embedding first
-    if (source) {
-      if (typeof source !== typeof MediaFile && typeof source === 'string' && !source.includes('/') && !source.includes('\\')) {
-        // Assume it's a voice name
-        queryParams.voice_name = source;
-      } 
-      else {
-        // Otherwise, we need to get the embedding first
-        const sourceEmbedding = await this.voice2embedding(source);
-        source = sourceEmbedding;
-      }
+
+    if (typeof targetVoice === 'string' && targetVoice.length > 0) {
+      queryParams.voice_name = targetVoice;
     }
-    
+    else if (targetVoice instanceof MediaFile) {
+      // We need to get the embedding first
+      const sourceEmbedding = await this.voice2embedding(targetVoice, { voice_name: queryParams.voice_name });
+      targetVoice = sourceEmbedding;
+    }
+    else {
+      queryParams.voice_name = 'hermine';
+    }
+
     const parsedQueryParams = zVoice2VoiceParams.parse(queryParams);
     const fileParams = zVoice2VoiceFileParams.parse({ audio_file: audioFile });
     

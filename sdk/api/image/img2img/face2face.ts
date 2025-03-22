@@ -1,7 +1,7 @@
 import { IFaceSwap } from './IFaceSwap';
 import { ApiClient } from '../../../core/web/APIClient';
 import { TrackedJob } from '../../../core/job/TrackedJob';
-import { MediaFile, ImageFile, VideoFile } from 'media-toolkit';
+import { MediaFile, ImageFile, VideoFile } from '@socaity/media-toolkit'
 import { z } from 'zod';
 
 import {

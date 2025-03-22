@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ImageFile } from 'media-toolkit';
+import { ImageFile } from '@socaity/media-toolkit'
 
 export const allowedMediaTypes = z.union([
   z.string(),

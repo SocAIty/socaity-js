@@ -1,4 +1,3 @@
-import { RequestHandler } from './web/RequestHandler';
 import { JobManager } from './job/JobManager';
 import { Configuration } from './configuration';
 import { SocaityJob } from '../types';
@@ -10,13 +9,17 @@ import { IConfig } from '../types';
  * Provides methods to interact with Socaity API services
  */
 export class SocaitySDK extends SocaityAPI {
-  private requestHandler: RequestHandler;
-  private jobManager: JobManager;
+  private _jobManager?: JobManager;
 
   constructor(configOptions: Partial<IConfig> = {}) {
     super(configOptions);
-    this.requestHandler = new RequestHandler();
-    this.jobManager = JobManager.getInstance(this.requestHandler);
+  }
+
+  private get jobManager(): JobManager {
+    if (!this._jobManager) {
+      this._jobManager = JobManager.getInstance();
+    }
+    return this._jobManager;
   }
 
   /**

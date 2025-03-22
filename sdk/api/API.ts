@@ -10,7 +10,7 @@ import { Face2Face } from './image/img2img/face2face';
 import { IText2Voice } from './audio/text2voice/IText2Voice';
 import { IVoice2Voice } from './audio/text2voice/IVoice2Voice';
 import { SpeechCraft } from './audio/text2voice/SpeechCraft';
-import { MediaFile, AudioFile, ImageFile } from 'media-toolkit';
+import { MediaFile, AudioFile, ImageFile } from '@socaity/media-toolkit'
 
 
 // SimpleAPI class that supports multiple models

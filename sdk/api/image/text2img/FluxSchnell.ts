@@ -2,7 +2,7 @@ import { ApiClient } from '../../../core/web/APIClient';
 import { TrackedJob } from '../../../core/job/TrackedJob';
 import { FluxText2ImgPostParams, zFluxText2ImgParams } from "./types";
 import { IText2Image } from './IText2Image';
-import { ImageFile } from 'media-toolkit';
+import { ImageFile } from '@socaity/media-toolkit'
 
 /**
  * Client for the FluxSchnell text-to-image model

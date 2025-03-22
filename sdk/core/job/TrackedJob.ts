@@ -1,7 +1,7 @@
 import { SocaityJob, JobStatus, ProcessingState, ProcessingPhase, JobEventCallback, JobProgress, EndpointMetadata } from '../../types';
 import { JobManager } from './JobManager';
 import { ProgressBarManager, isNode, cliProgress } from './ProgressBarManager';
-import { parseSocaityAPIJobResult } from 'media-toolkit';
+import { parseSocaityAPIJobResult } from '@socaity/media-toolkit';
 
 type EventType = 'completed' | 'failed' | 'progressUpdated' | 'statusUpdated' | 'processingUpdated';
 type EventListener = (...args: any[]) => void;

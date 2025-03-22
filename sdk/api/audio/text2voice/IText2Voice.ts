@@ -1,6 +1,6 @@
 import { TrackedJob } from '../../../core/job/TrackedJob';
 import { IAPIClient } from '../../../core/web/APIClient';
-import { MediaFile } from 'media-toolkit';
+import { MediaFile } from '@socaity/media-toolkit'
 
 /**
  * Base interface for text-to-voice models

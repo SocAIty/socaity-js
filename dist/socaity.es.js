@@ -1,12 +1,12 @@
 var Ut = Object.defineProperty;
-var $t = (n, e, t) => e in n ? Ut(n, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : n[e] = t;
-var g = (n, e, t) => $t(n, typeof e != "symbol" ? e + "" : e, t);
-class et extends Error {
+var Ft = (n, e, t) => e in n ? Ut(n, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : n[e] = t;
+var g = (n, e, t) => Ft(n, typeof e != "symbol" ? e + "" : e, t);
+class tt extends Error {
   constructor(e = "Invalid API key format. API keys should start with 'sk_' and be 67 characters long.") {
-    super(e), this.name = "ApiKeyError", Error.captureStackTrace && Error.captureStackTrace(this, et);
+    super(e), this.name = "ApiKeyError", Error.captureStackTrace && Error.captureStackTrace(this, tt);
   }
 }
-const Y = class Y {
+const H = class H {
   constructor(e = {}) {
     g(this, "apiKey");
     g(this, "baseUrl");
@@ -18,22 +18,22 @@ const Y = class Y {
    * Get the global configuration instance
    */
   static getInstance() {
-    return Y.instance || (Y.instance = new Y()), Y.instance;
+    return H.instance || (H.instance = new H()), H.instance;
   }
   /**
    * Updates global configuration with new values
    */
   static update(e) {
     if (e.apiKey !== void 0 && (!e.apiKey.startsWith("sk_") || e.apiKey.length != 67))
-      throw new et("API key is wrong. Get your API key from the Socaity https://www.socaity.ai dashboard.");
-    const t = Y.getInstance();
+      throw new tt("API key is wrong. Get your API key from the Socaity https://www.socaity.ai dashboard.");
+    const t = H.getInstance();
     Object.assign(t, e);
   }
 };
-g(Y, "instance");
-let G = Y;
+g(H, "instance");
+let Y = H;
 var E = /* @__PURE__ */ ((n) => (n.CREATED = "CREATED", n.QUEUED = "QUEUED", n.PROCESSING = "PROCESSING", n.COMPLETED = "COMPLETED", n.FAILED = "FAILED", n.UNKNOWN = "UNKNOWN", n))(E || {}), T = /* @__PURE__ */ ((n) => (n.INITIALIZING = "INITIALIZING", n.PREPARING = "PREPARING", n.SENDING = "SENDING", n.TRACKING = "TRACKING", n.PROCESSING_RESULT = "PROCESSING_RESULT", n.COMPLETED = "COMPLETED", n.FAILED = "FAILED", n))(T || {});
-class Ft {
+class $t {
   /**
    * Parse response into standardized job format
    * @param response - API response object or string
@@ -165,8 +165,8 @@ class Ft {
     };
   }
 }
-var Bt = Object.defineProperty, zt = (n, e, t) => e in n ? Bt(n, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : n[e] = t, le = (n, e, t) => zt(n, typeof e != "symbol" ? e + "" : e, t);
-function tt(n) {
+var Bt = Object.defineProperty, zt = (n, e, t) => e in n ? Bt(n, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : n[e] = t, ue = (n, e, t) => zt(n, typeof e != "symbol" ? e + "" : e, t);
+function rt(n) {
   return n && typeof n == "object" && "file_name" in n && "content_type" in n && "content" in n;
 }
 const Z = typeof window > "u";
@@ -191,15 +191,15 @@ async function xt(n) {
     const e = n.map((t) => xt(t));
     return Promise.all(e);
   }
-  if (tt(n))
+  if (rt(n))
     try {
-      return await new k().fromDict(n);
+      return await new x().fromDict(n);
     } catch {
       return n;
     }
   return n;
 }
-class ue {
+class ne {
   /**
    * Create a MediaFile or specialized subclass from any supported data type.
    * Automatically detects data type and instantiates the appropriate class.
@@ -210,9 +210,9 @@ class ue {
   static async create(e) {
     if (e == null)
       throw new Error("Cannot create MediaFile from null or undefined data");
-    const t = await ue._detectContentType(e);
-    let r = q.default;
-    return t && t.startsWith("image/") ? r = q.image : t && t.startsWith("audio/") ? r = q.audio : t && t.startsWith("video/") && (r = q.video), new r().fromAny(e);
+    const t = await ne._detectContentType(e);
+    let r = G.default;
+    return t && t.startsWith("image/") ? r = G.image : t && t.startsWith("audio/") ? r = G.audio : t && t.startsWith("video/") && (r = G.video), new r().fromAny(e);
   }
   /**
    * Detects content type from various data sources.
@@ -223,14 +223,14 @@ class ue {
    */
   static async _detectContentType(e) {
     var t;
-    if (e instanceof k)
+    if (e instanceof x)
       return e.getContentType();
-    if (tt(e))
+    if (rt(e))
       return e.content_type;
     if (typeof e == "string" && Et(e)) {
       const r = (t = new URL(e).pathname.split(".").pop()) == null ? void 0 : t.toLowerCase();
       if (r) {
-        const s = ue._getMimeTypeFromExtension(r);
+        const s = ne._getMimeTypeFromExtension(r);
         if (s) return s;
       }
       try {
@@ -256,7 +256,7 @@ class ue {
         await r.access(e);
         const a = s.extname(e).slice(1).toLowerCase();
         if (a) {
-          const i = ue._getMimeTypeFromExtension(a);
+          const i = ne._getMimeTypeFromExtension(a);
           if (i) return i;
         }
       } catch {
@@ -311,7 +311,7 @@ class ue {
     return e in t ? t[e] : null;
   }
 }
-class k {
+class x {
   /**
    * Creates a new MediaFile instance.
    * 
@@ -319,7 +319,7 @@ class k {
    * @param content_type - Default content type to use
    */
   constructor(e = "file", t = "application/octet-stream") {
-    le(this, "content_type"), le(this, "file_name"), le(this, "_content", null), this.content_type = t, this.file_name = e;
+    ue(this, "content_type"), ue(this, "file_name"), ue(this, "_content", null), this.content_type = t, this.file_name = e;
   }
   /**
    * Factory method to create a MediaFile from any supported data type.
@@ -330,7 +330,7 @@ class k {
    * @deprecated Use MediaFileFactory.create() instead
    */
   static async create(e) {
-    return ue.create(e);
+    return ne.create(e);
   }
   /**
    * Load a file from any supported data type.
@@ -340,7 +340,7 @@ class k {
    * @returns Promise resolving to a MediaFile instance or null
    */
   async fromAny(e) {
-    if (e instanceof k)
+    if (e instanceof x)
       return e;
     if (Z && this._isBuffer(e))
       return this.fromBytes(e);
@@ -359,7 +359,7 @@ class k {
         return await this.fromFile(e);
       throw new Error("Invalid data type for MediaFile");
     }
-    return tt(e) ? await this.fromDict(e) : this;
+    return rt(e) ? await this.fromDict(e) : this;
   }
   /**
    * Load file from a file path (Node.js only).
@@ -800,7 +800,7 @@ class k {
       return e.buffer.slice(e.byteOffset, e.byteOffset + e.byteLength);
   }
 }
-const kt = class N extends k {
+const kt = class N extends x {
   /**
    * Creates a new ImageFile instance.
    * 
@@ -830,7 +830,7 @@ const kt = class N extends k {
   async fromAny(e) {
     if (e instanceof N)
       return e;
-    if (e instanceof k && !(e instanceof N)) {
+    if (e instanceof x && !(e instanceof N)) {
       if (e.isEmpty())
         throw new Error("Cannot create ImageFile from empty MediaFile");
       return this.file_name = e.getFileName() || "image", this.content_type = e.getContentType(), this._content = e.read(), this._validateImageContentType(), this;
@@ -935,7 +935,7 @@ const kt = class N extends k {
     this.content_type = N.IMAGE_MIME_TYPES.png;
   }
 };
-le(kt, "IMAGE_MIME_TYPES", {
+ue(kt, "IMAGE_MIME_TYPES", {
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
   png: "image/png",
@@ -948,8 +948,8 @@ le(kt, "IMAGE_MIME_TYPES", {
   tif: "image/tiff",
   avif: "image/avif"
 });
-let se = kt;
-const Tt = class L extends k {
+let W = kt;
+const Tt = class L extends x {
   /**
    * Creates a new AudioFile instance.
    * 
@@ -979,7 +979,7 @@ const Tt = class L extends k {
   async fromAny(e) {
     if (e instanceof L)
       return e;
-    if (e instanceof k && !(e instanceof L)) {
+    if (e instanceof x && !(e instanceof L)) {
       if (e.isEmpty())
         throw new Error("Cannot create AudioFile from empty MediaFile");
       return this.file_name = e.getFileName() || "audio", this.content_type = e.getContentType(), this._content = e.read(), this._validateAudioContentType(), this;
@@ -1097,7 +1097,7 @@ const Tt = class L extends k {
     this.content_type = L.AUDIO_MIME_TYPES.mp3;
   }
 };
-le(Tt, "AUDIO_MIME_TYPES", {
+ue(Tt, "AUDIO_MIME_TYPES", {
   mp3: "audio/mpeg",
   wav: "audio/wav",
   ogg: "audio/ogg",
@@ -1106,8 +1106,8 @@ le(Tt, "AUDIO_MIME_TYPES", {
   m4a: "audio/mp4",
   webm: "audio/webm"
 });
-let ee = Tt;
-const At = class j extends k {
+let q = Tt;
+const At = class j extends x {
   /**
    * Creates a new VideoFile instance.
    * 
@@ -1137,7 +1137,7 @@ const At = class j extends k {
   async fromAny(e) {
     if (e instanceof j)
       return e;
-    if (e instanceof k && !(e instanceof j)) {
+    if (e instanceof x && !(e instanceof j)) {
       if (e.isEmpty())
         throw new Error("Cannot create VideoFile from empty MediaFile");
       return this.file_name = e.getFileName() || "video", this.content_type = e.getContentType(), this._content = e.read(), this._validateVideoContentType(), this;
@@ -1325,7 +1325,7 @@ const At = class j extends k {
     this.content_type = j.VIDEO_MIME_TYPES.mp4;
   }
 };
-le(At, "VIDEO_MIME_TYPES", {
+ue(At, "VIDEO_MIME_TYPES", {
   mp4: "video/mp4",
   mov: "video/quicktime",
   avi: "video/x-msvideo",
@@ -1335,13 +1335,15 @@ le(At, "VIDEO_MIME_TYPES", {
   "3gp": "video/3gpp",
   flv: "video/x-flv"
 });
-let It = At;
-const q = {};
-q.default = k;
-q.image = se;
-q.audio = ee;
-q.video = It;
-q.media = k;
+let Ve = At;
+const G = {};
+G.default = x;
+G.image = W;
+G.audio = q;
+G.video = Ve;
+G.media = x;
+typeof window < "u" && (window.MediaFile = x, window.ImageFile = W, window.AudioFile = q, window.AudioFile = Ve);
+typeof module < "u" && typeof module.exports < "u" && (module.exports = { MediaFile: x, ImageFile: W, AudioFile: q, VideoFile: Ve, MediaFileFactory: ne });
 class qt {
   // 60 seconds timeout for uploads
   /**
@@ -1354,15 +1356,15 @@ class qt {
     g(this, "defaultTimeout", 6e4);
     this.uploadEndpoint = e.uploadEndpoint || "https://api.socaity.ai/v0/files", this.apiKey = e.apiKey;
   }
+  setApiKey(e) {
+    this.apiKey = e;
+  }
   /**
    * Get authentication headers for requests
    * @returns Headers object with authentication
    */
   getAuthHeaders() {
-    return {
-      Authorization: `Bearer ${this.apiKey}`,
-      "Content-Type": "application/json"
-    };
+    return { Authorization: `Bearer ${this.apiKey}` };
   }
   /**
    * Process the upload response to extract file URLs
@@ -1370,10 +1372,16 @@ class qt {
    * @returns Array of temporary upload URLs
    */
   async processUploadResponse(e) {
+    if (e.status === 401)
+      throw new Error("Unauthorized: Invalid API key");
     if (!e.ok)
       throw new Error(`Failed to get temporary upload URL: ${e.status} ${e.statusText}`);
-    const t = await e.json();
-    return Array.isArray(t) ? t : [t];
+    try {
+      const t = await e.text(), r = JSON.parse(t);
+      return Array.isArray(r) ? r : [r];
+    } catch (t) {
+      throw console.error("Error parsing response:", t), new Error("Failed to parse response body as JSON");
+    }
   }
   /**
    * Upload a file to a temporary URL
@@ -1384,7 +1392,7 @@ class qt {
     const r = {
       "x-ms-blob-type": "BlockBlob",
       "x-ms-if-none-match": "*"
-    }, s = t instanceof k ? await t.toArrayBuffer() : t, a = await fetch(e, {
+    }, s = t instanceof x ? await t.toArrayBuffer() : t, a = await fetch(e, {
       method: "PUT",
       headers: r,
       body: s
@@ -1395,21 +1403,24 @@ class qt {
   /**
    * Upload a single file
    * @param file File to upload
-   * @returns URL of the uploaded file
+   * @returns the URLs of the uploaded files. (If one file is uploaded, the return value is an array with one URL)
    */
   async upload(e) {
-    const t = Array.isArray(e) ? e : [e], r = t.map((o) => o.extension).filter((o) => o !== null), s = await fetch(this.uploadEndpoint, {
+    const t = Array.isArray(e) ? e : [e], r = t.map((c) => c.extension).filter((c) => c !== null), s = {
+      "Content-Type": "application/json",
+      ...this.getAuthHeaders()
+    }, a = await fetch(this.uploadEndpoint, {
       method: "POST",
-      headers: this.getAuthHeaders(),
+      headers: s,
       body: JSON.stringify({
         n_files: t.length,
         file_extensions: r.length > 0 ? r : void 0
       }),
       signal: AbortSignal.timeout(this.defaultTimeout)
-    }), a = await this.processUploadResponse(s), i = a.map(
-      (o, c) => this.uploadToTemporaryUrl(o, t[c])
+    }), i = await this.processUploadResponse(a), o = i.map(
+      (c, d) => this.uploadToTemporaryUrl(c, t[d])
     );
-    return await Promise.all(i), t.length === 1 ? a[0] : a;
+    return await Promise.all(o), i;
   }
   /**
    * Download a file from a URL
@@ -1418,11 +1429,11 @@ class qt {
    * @returns MediaFile object or save path if specified
    */
   async download(e, t) {
-    const r = await new k(e).fromUrl(e, this.getAuthHeaders());
+    const r = await new x(e).fromUrl(e, this.getAuthHeaders());
     return t ? (await r.save(t), t) : r;
   }
 }
-class rt {
+class It {
   constructor() {
     g(this, "config");
     g(this, "uploadFileThresholdMB", 1);
@@ -1430,8 +1441,8 @@ class rt {
     g(this, "fastCloud");
     g(this, "abortController");
     g(this, "responseParser");
-    this.config = G.getInstance(), this.abortController = new AbortController(), this.responseParser = new Ft(), this.fastCloud = new qt({
-      uploadEndpoint: `${this.config.baseUrl}/v0/files`,
+    this.config = Y.getInstance(), this.abortController = new AbortController(), this.responseParser = new $t(), this.fastCloud = new qt({
+      uploadEndpoint: `${this.config.baseUrl}/files`,
       apiKey: this.config.apiKey ? this.config.apiKey : ""
     });
   }
@@ -1481,26 +1492,22 @@ class rt {
         else {
           let d = c;
           try {
-            d = c instanceof k ? c : await ue.create(c);
+            d = c instanceof x ? c : await ne.create(c);
           } catch (p) {
             console.log(`Failed to convert ${o} to MediaFile`, p);
           }
-          if (!(d instanceof k))
+          if (!(d instanceof x))
             continue;
           i[o] = d, a += d.fileSize("mb");
         }
       if (a > this.maxFileUploadLimitMB)
         throw new Error(`Total file size exceeds maximum limit of ${this.maxFileUploadLimitMB}MB`);
-      if (a > this.uploadFileThresholdMB)
-        if (Object.keys(i).length > 1) {
-          const o = Object.values(i), c = await this.fastCloud.upload(o);
-          Object.keys(i).forEach((d, p) => {
-            s[d] = c[p];
-          });
-        } else
-          for (const [o, c] of Object.entries(i))
-            s[o] = await this.fastCloud.upload(c);
-      else
+      if (a > this.uploadFileThresholdMB) {
+        const o = Object.values(i), c = await this.fastCloud.upload(o);
+        Object.keys(i).forEach((d, p) => {
+          s[d] = c[p];
+        });
+      } else
         for (const [o, c] of Object.entries(i))
           s[o] = c.toBlob();
       return s;
@@ -1516,7 +1523,7 @@ class rt {
     const t = e || this.config.apiKey;
     if (!t)
       throw new Error("API key not provided");
-    return t;
+    return this.fastCloud.setApiKey(t), t;
   }
   /**
    * Build query string from parameters
@@ -1566,31 +1573,31 @@ class rt {
     };
     let p = `${this.config.baseUrl}/${e}`, A = null;
     if (t === "GET") {
-      const P = { ...r, ...s, ...a };
-      p += this.buildQueryString(P);
+      const S = { ...r, ...s, ...a };
+      p += this.buildQueryString(S);
     } else if (Object.keys(a).length > 0) {
       p += this.buildQueryString({ ...r, ...s });
-      const M = new FormData();
-      Object.entries(a).forEach(([Ne, qe]) => {
-        qe != null && M.append(Ne, qe);
-      }), A = M;
+      const R = new FormData();
+      Object.entries(a).forEach(([Ne, Ge]) => {
+        Ge != null && R.append(Ne, Ge);
+      }), A = R;
     } else
       p += this.buildQueryString(r), d["Content-Type"] = "application/json", A = Object.keys(s).length > 0 ? JSON.stringify(s) : null;
     try {
-      const P = setTimeout(() => {
+      const S = setTimeout(() => {
         this.abort();
-      }, 3e4), M = await fetch(p, {
+      }, 3e4), R = await fetch(p, {
         method: t,
         headers: d,
         body: A,
         signal: c
       });
-      if (clearTimeout(P), !M.ok)
-        throw await this.formatErrorResponse(M);
-      const Ne = M.headers.get("content-type");
-      return Ne && Ne.includes("application/json") ? await M.json() : await M.text();
-    } catch (P) {
-      throw P instanceof DOMException && P.name === "AbortError" ? new Error("Request canceled") : P instanceof Error ? P : new Error(`Network error: ${String(P)}`);
+      if (clearTimeout(S), !R.ok)
+        throw await this.formatErrorResponse(R);
+      const Ne = R.headers.get("content-type");
+      return Ne && Ne.includes("application/json") ? await R.json() : await R.text();
+    } catch (S) {
+      throw S instanceof DOMException && S.name === "AbortError" ? new Error("Request canceled") : S instanceof Error ? S : new Error(`Network error: ${String(S)}`);
     }
   }
   /**
@@ -1621,7 +1628,7 @@ class rt {
     this.abortController.abort(), this.abortController = new AbortController();
   }
 }
-const te = class te {
+const re = class re {
   /**
    * Private constructor to enforce singleton pattern
    * @param requestHandler - RequestHandler for API communication
@@ -1631,7 +1638,7 @@ const te = class te {
     g(this, "config");
     g(this, "jobs");
     g(this, "mediaHandler");
-    this.requestHandler = e, this.config = G.getInstance(), this.jobs = /* @__PURE__ */ new Map(), this.mediaHandler = new k();
+    this.requestHandler = e, this.config = Y.getInstance(), this.jobs = /* @__PURE__ */ new Map(), this.mediaHandler = new x();
   }
   /**
    * Get the singleton instance of JobManager
@@ -1639,7 +1646,7 @@ const te = class te {
    * @returns The JobManager instance
    */
   static getInstance(e) {
-    return te.instance || (e || (e = new rt()), te.instance = new te(e)), te.instance;
+    return re.instance || (e || (e = new It()), re.instance = new re(e)), re.instance;
   }
   /**
    * Submit a new job to the API
@@ -1712,8 +1719,8 @@ const te = class te {
       (t.status === E.COMPLETED || t.status === E.FAILED) && this.jobs.delete(e);
   }
 };
-g(te, "instance");
-let Le = te;
+g(re, "instance");
+let Le = re;
 const _e = typeof process < "u" && process.stdout && process.stdout.clearLine;
 let he;
 if (_e)
@@ -1722,7 +1729,7 @@ if (_e)
   } catch {
     console.warn("cli-progress package not found. Using basic console output for progress.");
   }
-const re = class re {
+const se = class se {
   constructor() {
     g(this, "multiBar");
     g(this, "bars", /* @__PURE__ */ new Map());
@@ -1734,7 +1741,7 @@ const re = class re {
     }), this.isInitialized = !0);
   }
   static getInstance() {
-    return re.instance || (re.instance = new re()), re.instance;
+    return se.instance || (se.instance = new se()), se.instance;
   }
   createBar(e, t) {
     if (!this.isInitialized) return null;
@@ -1757,8 +1764,8 @@ const re = class re {
     this.isInitialized && (this.multiBar.stop(), this.bars.clear());
   }
 };
-g(re, "instance");
-let We = re;
+g(se, "instance");
+let Ye = se;
 class Gt {
   constructor(e, t, r, s, a = !0) {
     g(this, "apiJob");
@@ -1781,7 +1788,7 @@ class Gt {
     this.apiJob = e, this.jobManager = t, this.endpoint = r, this.verbose = a, this.processingState = {
       phase: T.INITIALIZING,
       progress: 0
-    }, this.progressBarManager = We.getInstance(), this.promise = new Promise((i, o) => {
+    }, this.progressBarManager = Ye.getInstance(), this.promise = new Promise((i, o) => {
       this.resolvePromise = i, this.rejectPromise = o;
     }), s && this.onParseResult(s), setTimeout(() => this.startTracking(), 0), this.verbose && this.initProgressDisplay();
   }
@@ -2075,7 +2082,7 @@ const O = class O {
 };
 g(O, "instance");
 let I = O;
-class Ve {
+class Je {
   constructor(e) {
     g(this, "requestHandler");
     g(this, "config");
@@ -2083,7 +2090,7 @@ class Ve {
     g(this, "jobManager");
     // Name of the API client. Has influence on path variable in the requests which will be formatted like /api/v1/{name}/{endpoint}
     g(this, "name");
-    this.name = this.sanitizePath(e), this.config = G.getInstance(), this.requestHandler = new rt(), this.endpoints = /* @__PURE__ */ new Map(), this.jobManager = Le.getInstance(this.requestHandler), this.registerEndpoints(), I.registerClient(this);
+    this.name = this.sanitizePath(e), this.config = Y.getInstance(), this.requestHandler = new It(), this.endpoints = /* @__PURE__ */ new Map(), this.jobManager = Le.getInstance(this.requestHandler), this.registerEndpoints(), I.registerClient(this);
   }
   sanitizePath(e) {
     return !e || typeof e != "string" ? "" : e.toLowerCase().trim().replace(/\s+/g, " ").replace(/\//g, "-").replace(/[\s_]/g, "-").replace(/[^a-z0-9\-]/g, "").replace(/\-+/g, "-").replace(/^\-+|\-+$/g, "").trim();
@@ -2109,7 +2116,7 @@ class Ve {
    * Update the client configuration
    */
   updateConfig(e) {
-    G.update(e);
+    Y.update(e);
   }
   /**
    * Submit a job to the API and return a TrackedJob for monitoring
@@ -2178,14 +2185,14 @@ var w;
   }
   n.joinValues = r, n.jsonStringifyReplacer = (s, a) => typeof a == "bigint" ? a.toString() : a;
 })(w || (w = {}));
-var Ye;
+var Ke;
 (function(n) {
   n.mergeShapes = (e, t) => ({
     ...e,
     ...t
     // second overwrites first
   });
-})(Ye || (Ye = {}));
+})(Ke || (Ke = {}));
 const f = w.arrayToEnum([
   "string",
   "nan",
@@ -2246,7 +2253,7 @@ const f = w.arrayToEnum([
   "not_multiple_of",
   "not_finite"
 ]), Wt = (n) => JSON.stringify(n, null, 2).replace(/"([^"]+)":/g, "$1:");
-class R extends Error {
+class M extends Error {
   get errors() {
     return this.issues;
   }
@@ -2283,7 +2290,7 @@ class R extends Error {
     return s(this), r;
   }
   static assert(e) {
-    if (!(e instanceof R))
+    if (!(e instanceof M))
       throw new Error(`Not a ZodError: ${e}`);
   }
   toString() {
@@ -2305,7 +2312,7 @@ class R extends Error {
     return this.flatten();
   }
 }
-R.create = (n) => new R(n);
+M.create = (n) => new M(n);
 const pe = (n, e) => {
   let t;
   switch (n.code) {
@@ -2389,7 +2396,7 @@ const De = (n) => {
     path: a,
     message: o
   };
-}, Ht = [];
+}, Kt = [];
 function h(n, e) {
   const t = Ze(), r = De({
     issueData: e,
@@ -2451,12 +2458,12 @@ class C {
 }
 const v = Object.freeze({
   status: "aborted"
-}), de = (n) => ({ status: "dirty", value: n }), S = (n) => ({ status: "valid", value: n }), He = (n) => n.status === "aborted", Ke = (n) => n.status === "dirty", ae = (n) => n.status === "valid", we = (n) => typeof Promise < "u" && n instanceof Promise;
+}), le = (n) => ({ status: "dirty", value: n }), P = (n) => ({ status: "valid", value: n }), He = (n) => n.status === "aborted", Qe = (n) => n.status === "dirty", ie = (n) => n.status === "valid", we = (n) => typeof Promise < "u" && n instanceof Promise;
 function Ue(n, e, t, r) {
   if (typeof e == "function" ? n !== e || !0 : !e.has(n)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
   return e.get(n);
 }
-function Pt(n, e, t, r, s) {
+function St(n, e, t, r, s) {
   if (typeof e == "function" ? n !== e || !0 : !e.has(n)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
   return e.set(n, t), t;
 }
@@ -2474,7 +2481,7 @@ class B {
   }
 }
 const at = (n, e) => {
-  if (ae(e))
+  if (ie(e))
     return { success: !0, data: e.value };
   if (!n.common.issues.length)
     throw new Error("Validation failed but no issues detected.");
@@ -2483,7 +2490,7 @@ const at = (n, e) => {
     get error() {
       if (this._error)
         return this._error;
-      const t = new R(n.common.issues);
+      const t = new M(n.common.issues);
       return this._error = t, this._error;
     }
   };
@@ -2578,7 +2585,7 @@ class b {
     if (!this["~standard"].async)
       try {
         const a = this._parseSync({ data: e, path: [], parent: s });
-        return ae(a) ? {
+        return ie(a) ? {
           value: a.value
         } : {
           issues: s.common.issues
@@ -2589,7 +2596,7 @@ class b {
           async: !0
         };
       }
-    return this._parseAsync({ data: e, path: [], parent: s }).then((a) => ae(a) ? {
+    return this._parseAsync({ data: e, path: [], parent: s }).then((a) => ie(a) ? {
       value: a.value
     } : {
       issues: s.common.issues
@@ -2630,7 +2637,7 @@ class b {
     return this._refinement((r, s) => e(r) ? !0 : (s.addIssue(typeof t == "function" ? t(r, s) : t), !1));
   }
   _refinement(e) {
-    return new $({
+    return new F({
       schema: this,
       typeName: y.ZodEffects,
       effect: { type: "refinement", refinement: e }
@@ -2647,10 +2654,10 @@ class b {
     };
   }
   optional() {
-    return F.create(this, this._def);
+    return $.create(this, this._def);
   }
   nullable() {
-    return X.create(this, this._def);
+    return te.create(this, this._def);
   }
   nullish() {
     return this.nullable().optional();
@@ -2668,7 +2675,7 @@ class b {
     return Ae.create(this, e, this._def);
   }
   transform(e) {
-    return new $({
+    return new F({
       ..._(this._def),
       schema: this,
       typeName: y.ZodEffects,
@@ -2708,10 +2715,10 @@ class b {
     });
   }
   pipe(e) {
-    return Me.create(this, e);
+    return Re.create(this, e);
   }
   readonly() {
-    return Re.create(this);
+    return Me.create(this);
   }
   isOptional() {
     return this.safeParse(void 0).success;
@@ -2720,9 +2727,9 @@ class b {
     return this.safeParse(null).success;
   }
 }
-const Kt = /^c[^\s-]{8,}$/i, Qt = /^[0-9a-z]+$/, Xt = /^[0-9A-HJKMNP-TV-Z]{26}$/i, er = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i, tr = /^[a-z0-9_-]{21}$/i, rr = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/, sr = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/, nr = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i, ar = "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$";
-let Ge;
-const ir = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/, or = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/, cr = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/, dr = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/, lr = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/, ur = /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/, St = "((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))", hr = new RegExp(`^${St}$`);
+const Ht = /^c[^\s-]{8,}$/i, Qt = /^[0-9a-z]+$/, Xt = /^[0-9A-HJKMNP-TV-Z]{26}$/i, er = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i, tr = /^[a-z0-9_-]{21}$/i, rr = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/, sr = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/, nr = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i, ar = "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$";
+let We;
+const ir = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/, or = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/, cr = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/, dr = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/, lr = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/, ur = /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/, Pt = "((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))", hr = new RegExp(`^${Pt}$`);
 function Ot(n) {
   let e = "([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d";
   return n.precision ? e = `${e}\\.\\d{${n.precision}}` : n.precision == null && (e = `${e}(\\.\\d+)?`), e;
@@ -2731,7 +2738,7 @@ function fr(n) {
   return new RegExp(`^${Ot(n)}$`);
 }
 function jt(n) {
-  let e = `${St}T${Ot(n)}`;
+  let e = `${Pt}T${Ot(n)}`;
   const t = [];
   return t.push(n.local ? "Z?" : "Z"), n.offset && t.push("([+-]\\d{2}:?\\d{2})"), e = `${e}(${t.join("|")})`, new RegExp(`^${e}$`);
 }
@@ -2806,7 +2813,7 @@ class D extends b {
           message: a.message
         }), r.dirty());
       else if (a.kind === "emoji")
-        Ge || (Ge = new RegExp(ar, "u")), Ge.test(e.data) || (s = this._getOrReturnCtx(e, s), h(s, {
+        We || (We = new RegExp(ar, "u")), We.test(e.data) || (s = this._getOrReturnCtx(e, s), h(s, {
           validation: "emoji",
           code: l.invalid_string,
           message: a.message
@@ -2824,7 +2831,7 @@ class D extends b {
           message: a.message
         }), r.dirty());
       else if (a.kind === "cuid")
-        Kt.test(e.data) || (s = this._getOrReturnCtx(e, s), h(s, {
+        Ht.test(e.data) || (s = this._getOrReturnCtx(e, s), h(s, {
           validation: "cuid",
           code: l.invalid_string,
           message: a.message
@@ -3142,7 +3149,7 @@ function yr(n, e) {
   const t = (n.toString().split(".")[1] || "").length, r = (e.toString().split(".")[1] || "").length, s = t > r ? t : r, a = parseInt(n.toFixed(s).replace(".", "")), i = parseInt(e.toFixed(s).replace(".", ""));
   return a % i / Math.pow(10, s);
 }
-class H extends b {
+class Q extends b {
   constructor() {
     super(...arguments), this.min = this.gte, this.max = this.lte, this.step = this.multipleOf;
   }
@@ -3200,7 +3207,7 @@ class H extends b {
     return this.setLimit("max", e, !1, m.toString(t));
   }
   setLimit(e, t, r, s) {
-    return new H({
+    return new Q({
       ...this._def,
       checks: [
         ...this._def.checks,
@@ -3214,7 +3221,7 @@ class H extends b {
     });
   }
   _addCheck(e) {
-    return new H({
+    return new Q({
       ...this._def,
       checks: [...this._def.checks, e]
     });
@@ -3308,13 +3315,13 @@ class H extends b {
     return Number.isFinite(t) && Number.isFinite(e);
   }
 }
-H.create = (n) => new H({
+Q.create = (n) => new Q({
   checks: [],
   typeName: y.ZodNumber,
   coerce: (n == null ? void 0 : n.coerce) || !1,
   ..._(n)
 });
-class K extends b {
+class X extends b {
   constructor() {
     super(...arguments), this.min = this.gte, this.max = this.lte;
   }
@@ -3370,7 +3377,7 @@ class K extends b {
     return this.setLimit("max", e, !1, m.toString(t));
   }
   setLimit(e, t, r, s) {
-    return new K({
+    return new X({
       ...this._def,
       checks: [
         ...this._def.checks,
@@ -3384,7 +3391,7 @@ class K extends b {
     });
   }
   _addCheck(e) {
-    return new K({
+    return new X({
       ...this._def,
       checks: [...this._def.checks, e]
     });
@@ -3441,9 +3448,9 @@ class K extends b {
     return e;
   }
 }
-K.create = (n) => {
+X.create = (n) => {
   var e;
-  return new K({
+  return new X({
     checks: [],
     typeName: y.ZodBigInt,
     coerce: (e = n == null ? void 0 : n.coerce) !== null && e !== void 0 ? e : !1,
@@ -3460,7 +3467,7 @@ class Ee extends b {
         received: r.parsedType
       }), v;
     }
-    return S(e.data);
+    return P(e.data);
   }
 }
 Ee.create = (n) => new Ee({
@@ -3468,7 +3475,7 @@ Ee.create = (n) => new Ee({
   coerce: (n == null ? void 0 : n.coerce) || !1,
   ..._(n)
 });
-class ie extends b {
+class oe extends b {
   _parse(e) {
     if (this._def.coerce && (e.data = new Date(e.data)), this._getType(e) !== f.date) {
       const a = this._getOrReturnCtx(e);
@@ -3508,7 +3515,7 @@ class ie extends b {
     };
   }
   _addCheck(e) {
-    return new ie({
+    return new oe({
       ...this._def,
       checks: [...this._def.checks, e]
     });
@@ -3540,13 +3547,13 @@ class ie extends b {
     return e != null ? new Date(e) : null;
   }
 }
-ie.create = (n) => new ie({
+oe.create = (n) => new oe({
   checks: [],
   coerce: (n == null ? void 0 : n.coerce) || !1,
   typeName: y.ZodDate,
   ..._(n)
 });
-class $e extends b {
+class Fe extends b {
   _parse(e) {
     if (this._getType(e) !== f.symbol) {
       const r = this._getOrReturnCtx(e);
@@ -3556,10 +3563,10 @@ class $e extends b {
         received: r.parsedType
       }), v;
     }
-    return S(e.data);
+    return P(e.data);
   }
 }
-$e.create = (n) => new $e({
+Fe.create = (n) => new Fe({
   typeName: y.ZodSymbol,
   ..._(n)
 });
@@ -3573,7 +3580,7 @@ class xe extends b {
         received: r.parsedType
       }), v;
     }
-    return S(e.data);
+    return P(e.data);
   }
 }
 xe.create = (n) => new xe({
@@ -3590,7 +3597,7 @@ class ke extends b {
         received: r.parsedType
       }), v;
     }
-    return S(e.data);
+    return P(e.data);
   }
 }
 ke.create = (n) => new ke({
@@ -3602,26 +3609,26 @@ class me extends b {
     super(...arguments), this._any = !0;
   }
   _parse(e) {
-    return S(e.data);
+    return P(e.data);
   }
 }
 me.create = (n) => new me({
   typeName: y.ZodAny,
   ..._(n)
 });
-class ne extends b {
+class ae extends b {
   constructor() {
     super(...arguments), this._unknown = !0;
   }
   _parse(e) {
-    return S(e.data);
+    return P(e.data);
   }
 }
-ne.create = (n) => new ne({
+ae.create = (n) => new ae({
   typeName: y.ZodUnknown,
   ..._(n)
 });
-class W extends b {
+class K extends b {
   _parse(e) {
     const t = this._getOrReturnCtx(e);
     return h(t, {
@@ -3631,11 +3638,11 @@ class W extends b {
     }), v;
   }
 }
-W.create = (n) => new W({
+K.create = (n) => new K({
   typeName: y.ZodNever,
   ..._(n)
 });
-class Fe extends b {
+class $e extends b {
   _parse(e) {
     if (this._getType(e) !== f.undefined) {
       const r = this._getOrReturnCtx(e);
@@ -3645,10 +3652,10 @@ class Fe extends b {
         received: r.parsedType
       }), v;
     }
-    return S(e.data);
+    return P(e.data);
   }
 }
-Fe.create = (n) => new Fe({
+$e.create = (n) => new $e({
   typeName: y.ZodVoid,
   ..._(n)
 });
@@ -3725,23 +3732,23 @@ U.create = (n, e) => new U({
   typeName: y.ZodArray,
   ..._(e)
 });
-function ce(n) {
-  if (n instanceof x) {
+function de(n) {
+  if (n instanceof k) {
     const e = {};
     for (const t in n.shape) {
       const r = n.shape[t];
-      e[t] = F.create(ce(r));
+      e[t] = $.create(de(r));
     }
-    return new x({
+    return new k({
       ...n._def,
       shape: () => e
     });
   } else return n instanceof U ? new U({
     ...n._def,
-    type: ce(n.element)
-  }) : n instanceof F ? F.create(ce(n.unwrap())) : n instanceof X ? X.create(ce(n.unwrap())) : n instanceof z ? z.create(n.items.map((e) => ce(e))) : n;
+    type: de(n.element)
+  }) : n instanceof $ ? $.create(de(n.unwrap())) : n instanceof te ? te.create(de(n.unwrap())) : n instanceof z ? z.create(n.items.map((e) => de(e))) : n;
 }
-class x extends b {
+class k extends b {
   constructor() {
     super(...arguments), this._cached = null, this.nonstrict = this.passthrough, this.augment = this.extend;
   }
@@ -3761,7 +3768,7 @@ class x extends b {
       }), v;
     }
     const { status: r, ctx: s } = this._processInputParams(e), { shape: a, keys: i } = this._getCached(), o = [];
-    if (!(this._def.catchall instanceof W && this._def.unknownKeys === "strip"))
+    if (!(this._def.catchall instanceof K && this._def.unknownKeys === "strip"))
       for (const d in s.data)
         i.includes(d) || o.push(d);
     const c = [];
@@ -3773,7 +3780,7 @@ class x extends b {
         alwaysSet: d in s.data
       });
     }
-    if (this._def.catchall instanceof W) {
+    if (this._def.catchall instanceof K) {
       const d = this._def.unknownKeys;
       if (d === "passthrough")
         for (const p of o)
@@ -3804,10 +3811,10 @@ class x extends b {
     return s.common.async ? Promise.resolve().then(async () => {
       const d = [];
       for (const p of c) {
-        const A = await p.key, P = await p.value;
+        const A = await p.key, S = await p.value;
         d.push({
           key: A,
-          value: P,
+          value: S,
           alwaysSet: p.alwaysSet
         });
       }
@@ -3818,7 +3825,7 @@ class x extends b {
     return this._def.shape();
   }
   strict(e) {
-    return m.errToObj, new x({
+    return m.errToObj, new k({
       ...this._def,
       unknownKeys: "strict",
       ...e !== void 0 ? {
@@ -3835,13 +3842,13 @@ class x extends b {
     });
   }
   strip() {
-    return new x({
+    return new k({
       ...this._def,
       unknownKeys: "strip"
     });
   }
   passthrough() {
-    return new x({
+    return new k({
       ...this._def,
       unknownKeys: "passthrough"
     });
@@ -3864,7 +3871,7 @@ class x extends b {
   //     }) as any;
   //   };
   extend(e) {
-    return new x({
+    return new k({
       ...this._def,
       shape: () => ({
         ...this._def.shape(),
@@ -3878,7 +3885,7 @@ class x extends b {
    * upgrade if you are experiencing issues.
    */
   merge(e) {
-    return new x({
+    return new k({
       unknownKeys: e._def.unknownKeys,
       catchall: e._def.catchall,
       shape: () => ({
@@ -3948,7 +3955,7 @@ class x extends b {
   //   return merged;
   // }
   catchall(e) {
-    return new x({
+    return new k({
       ...this._def,
       catchall: e
     });
@@ -3957,7 +3964,7 @@ class x extends b {
     const t = {};
     return w.objectKeys(e).forEach((r) => {
       e[r] && this.shape[r] && (t[r] = this.shape[r]);
-    }), new x({
+    }), new k({
       ...this._def,
       shape: () => t
     });
@@ -3966,7 +3973,7 @@ class x extends b {
     const t = {};
     return w.objectKeys(this.shape).forEach((r) => {
       e[r] || (t[r] = this.shape[r]);
-    }), new x({
+    }), new k({
       ...this._def,
       shape: () => t
     });
@@ -3975,14 +3982,14 @@ class x extends b {
    * @deprecated
    */
   deepPartial() {
-    return ce(this);
+    return de(this);
   }
   partial(e) {
     const t = {};
     return w.objectKeys(this.shape).forEach((r) => {
       const s = this.shape[r];
       e && !e[r] ? t[r] = s : t[r] = s.optional();
-    }), new x({
+    }), new k({
       ...this._def,
       shape: () => t
     });
@@ -3994,37 +4001,37 @@ class x extends b {
         t[r] = this.shape[r];
       else {
         let a = this.shape[r];
-        for (; a instanceof F; )
+        for (; a instanceof $; )
           a = a._def.innerType;
         t[r] = a;
       }
-    }), new x({
+    }), new k({
       ...this._def,
       shape: () => t
     });
   }
   keyof() {
-    return Rt(w.objectKeys(this.shape));
+    return Mt(w.objectKeys(this.shape));
   }
 }
-x.create = (n, e) => new x({
+k.create = (n, e) => new k({
   shape: () => n,
   unknownKeys: "strip",
-  catchall: W.create(),
+  catchall: K.create(),
   typeName: y.ZodObject,
   ..._(e)
 });
-x.strictCreate = (n, e) => new x({
+k.strictCreate = (n, e) => new k({
   shape: () => n,
   unknownKeys: "strict",
-  catchall: W.create(),
+  catchall: K.create(),
   typeName: y.ZodObject,
   ..._(e)
 });
-x.lazycreate = (n, e) => new x({
+k.lazycreate = (n, e) => new k({
   shape: n,
   unknownKeys: "strip",
-  catchall: W.create(),
+  catchall: K.create(),
   typeName: y.ZodObject,
   ..._(e)
 });
@@ -4038,7 +4045,7 @@ class Te extends b {
       for (const o of a)
         if (o.result.status === "dirty")
           return t.common.issues.push(...o.ctx.common.issues), o.result;
-      const i = a.map((o) => new R(o.ctx.common.issues));
+      const i = a.map((o) => new M(o.ctx.common.issues));
       return h(t, {
         code: l.invalid_union,
         unionErrors: i
@@ -4085,7 +4092,7 @@ class Te extends b {
       }
       if (a)
         return t.common.issues.push(...a.ctx.common.issues), a.result;
-      const o = i.map((c) => new R(c));
+      const o = i.map((c) => new M(c));
       return h(t, {
         code: l.invalid_union,
         unionErrors: o
@@ -4101,8 +4108,8 @@ Te.create = (n, e) => new Te({
   typeName: y.ZodUnion,
   ..._(e)
 });
-const V = (n) => n instanceof Ce ? V(n.schema) : n instanceof $ ? V(n.innerType()) : n instanceof Pe ? [n.value] : n instanceof Q ? n.options : n instanceof Se ? w.objectValues(n.enum) : n instanceof Oe ? V(n._def.innerType) : n instanceof xe ? [void 0] : n instanceof ke ? [null] : n instanceof F ? [void 0, ...V(n.unwrap())] : n instanceof X ? [null, ...V(n.unwrap())] : n instanceof st || n instanceof Re ? V(n.unwrap()) : n instanceof je ? V(n._def.innerType) : [];
-class Je extends b {
+const V = (n) => n instanceof Ce ? V(n.schema) : n instanceof F ? V(n.innerType()) : n instanceof Se ? [n.value] : n instanceof ee ? n.options : n instanceof Pe ? w.objectValues(n.enum) : n instanceof Oe ? V(n._def.innerType) : n instanceof xe ? [void 0] : n instanceof ke ? [null] : n instanceof $ ? [void 0, ...V(n.unwrap())] : n instanceof te ? [null, ...V(n.unwrap())] : n instanceof st || n instanceof Me ? V(n.unwrap()) : n instanceof je ? V(n._def.innerType) : [];
+class qe extends b {
   _parse(e) {
     const { ctx: t } = this._processInputParams(e);
     if (t.parsedType !== f.object)
@@ -4155,7 +4162,7 @@ class Je extends b {
         s.set(o, a);
       }
     }
-    return new Je({
+    return new qe({
       typeName: y.ZodDiscriminatedUnion,
       discriminator: e,
       options: t,
@@ -4164,14 +4171,14 @@ class Je extends b {
     });
   }
 }
-function Qe(n, e) {
+function Xe(n, e) {
   const t = J(n), r = J(e);
   if (n === e)
     return { valid: !0, data: n };
   if (t === f.object && r === f.object) {
     const s = w.objectKeys(e), a = w.objectKeys(n).filter((o) => s.indexOf(o) !== -1), i = { ...n, ...e };
     for (const o of a) {
-      const c = Qe(n[o], e[o]);
+      const c = Xe(n[o], e[o]);
       if (!c.valid)
         return { valid: !1 };
       i[o] = c.data;
@@ -4182,7 +4189,7 @@ function Qe(n, e) {
       return { valid: !1 };
     const s = [];
     for (let a = 0; a < n.length; a++) {
-      const i = n[a], o = e[a], c = Qe(i, o);
+      const i = n[a], o = e[a], c = Xe(i, o);
       if (!c.valid)
         return { valid: !1 };
       s.push(c.data);
@@ -4195,8 +4202,8 @@ class Ae extends b {
     const { status: t, ctx: r } = this._processInputParams(e), s = (a, i) => {
       if (He(a) || He(i))
         return v;
-      const o = Qe(a.value, i.value);
-      return o.valid ? ((Ke(a) || Ke(i)) && t.dirty(), { status: t.value, value: o.data }) : (h(r, {
+      const o = Xe(a.value, i.value);
+      return o.valid ? ((Qe(a) || Qe(i)) && t.dirty(), { status: t.value, value: o.data }) : (h(r, {
         code: l.invalid_intersection_types
       }), v);
     };
@@ -4367,7 +4374,7 @@ Be.create = (n, e, t) => new Be({
   typeName: y.ZodMap,
   ..._(t)
 });
-class oe extends b {
+class ce extends b {
   _parse(e) {
     const { status: t, ctx: r } = this._processInputParams(e);
     if (r.parsedType !== f.set)
@@ -4406,13 +4413,13 @@ class oe extends b {
     return r.common.async ? Promise.all(o).then((c) => i(c)) : i(o);
   }
   min(e, t) {
-    return new oe({
+    return new ce({
       ...this._def,
       minSize: { value: e, message: m.toString(t) }
     });
   }
   max(e, t) {
-    return new oe({
+    return new ce({
       ...this._def,
       maxSize: { value: e, message: m.toString(t) }
     });
@@ -4424,7 +4431,7 @@ class oe extends b {
     return this.min(1, e);
   }
 }
-oe.create = (n, e) => new oe({
+ce.create = (n, e) => new ce({
   valueType: n,
   minSize: null,
   maxSize: null,
@@ -4478,23 +4485,23 @@ class fe extends b {
     const a = { errorMap: t.common.contextualErrorMap }, i = t.data;
     if (this._def.returns instanceof ge) {
       const o = this;
-      return S(async function(...c) {
-        const d = new R([]), p = await o._def.args.parseAsync(c, a).catch((M) => {
-          throw d.addIssue(r(c, M)), d;
+      return P(async function(...c) {
+        const d = new M([]), p = await o._def.args.parseAsync(c, a).catch((R) => {
+          throw d.addIssue(r(c, R)), d;
         }), A = await Reflect.apply(i, this, p);
-        return await o._def.returns._def.type.parseAsync(A, a).catch((M) => {
-          throw d.addIssue(s(A, M)), d;
+        return await o._def.returns._def.type.parseAsync(A, a).catch((R) => {
+          throw d.addIssue(s(A, R)), d;
         });
       });
     } else {
       const o = this;
-      return S(function(...c) {
+      return P(function(...c) {
         const d = o._def.args.safeParse(c, a);
         if (!d.success)
-          throw new R([r(c, d.error)]);
+          throw new M([r(c, d.error)]);
         const p = Reflect.apply(i, this, d.data), A = o._def.returns.safeParse(p, a);
         if (!A.success)
-          throw new R([s(p, A.error)]);
+          throw new M([s(p, A.error)]);
         return A.data;
       });
     }
@@ -4508,7 +4515,7 @@ class fe extends b {
   args(...e) {
     return new fe({
       ...this._def,
-      args: z.create(e).rest(ne.create())
+      args: z.create(e).rest(ae.create())
     });
   }
   returns(e) {
@@ -4525,8 +4532,8 @@ class fe extends b {
   }
   static create(e, t, r) {
     return new fe({
-      args: e || z.create([]).rest(ne.create()),
-      returns: t || ne.create(),
+      args: e || z.create([]).rest(ae.create()),
+      returns: t || ae.create(),
       typeName: y.ZodFunction,
       ..._(r)
     });
@@ -4546,7 +4553,7 @@ Ce.create = (n, e) => new Ce({
   typeName: y.ZodLazy,
   ..._(e)
 });
-class Pe extends b {
+class Se extends b {
   _parse(e) {
     if (e.data !== this._def.value) {
       const t = this._getOrReturnCtx(e);
@@ -4562,19 +4569,19 @@ class Pe extends b {
     return this._def.value;
   }
 }
-Pe.create = (n, e) => new Pe({
+Se.create = (n, e) => new Se({
   value: n,
   typeName: y.ZodLiteral,
   ..._(e)
 });
-function Rt(n, e) {
-  return new Q({
+function Mt(n, e) {
+  return new ee({
     values: n,
     typeName: y.ZodEnum,
     ..._(e)
   });
 }
-class Q extends b {
+class ee extends b {
   constructor() {
     super(...arguments), ye.set(this, void 0);
   }
@@ -4587,7 +4594,7 @@ class Q extends b {
         code: l.invalid_type
       }), v;
     }
-    if (Ue(this, ye) || Pt(this, ye, new Set(this._def.values)), !Ue(this, ye).has(e.data)) {
+    if (Ue(this, ye) || St(this, ye, new Set(this._def.values)), !Ue(this, ye).has(e.data)) {
       const t = this._getOrReturnCtx(e), r = this._def.values;
       return h(t, {
         received: t.data,
@@ -4595,7 +4602,7 @@ class Q extends b {
         options: r
       }), v;
     }
-    return S(e.data);
+    return P(e.data);
   }
   get options() {
     return this._def.values;
@@ -4619,21 +4626,21 @@ class Q extends b {
     return e;
   }
   extract(e, t = this._def) {
-    return Q.create(e, {
+    return ee.create(e, {
       ...this._def,
       ...t
     });
   }
   exclude(e, t = this._def) {
-    return Q.create(this.options.filter((r) => !e.includes(r)), {
+    return ee.create(this.options.filter((r) => !e.includes(r)), {
       ...this._def,
       ...t
     });
   }
 }
 ye = /* @__PURE__ */ new WeakMap();
-Q.create = Rt;
-class Se extends b {
+ee.create = Mt;
+class Pe extends b {
   constructor() {
     super(...arguments), ve.set(this, void 0);
   }
@@ -4647,7 +4654,7 @@ class Se extends b {
         code: l.invalid_type
       }), v;
     }
-    if (Ue(this, ve) || Pt(this, ve, new Set(w.getValidEnumValues(this._def.values))), !Ue(this, ve).has(e.data)) {
+    if (Ue(this, ve) || St(this, ve, new Set(w.getValidEnumValues(this._def.values))), !Ue(this, ve).has(e.data)) {
       const s = w.objectValues(t);
       return h(r, {
         received: r.data,
@@ -4655,14 +4662,14 @@ class Se extends b {
         options: s
       }), v;
     }
-    return S(e.data);
+    return P(e.data);
   }
   get enum() {
     return this._def.values;
   }
 }
 ve = /* @__PURE__ */ new WeakMap();
-Se.create = (n, e) => new Se({
+Pe.create = (n, e) => new Pe({
   values: n,
   typeName: y.ZodNativeEnum,
   ..._(e)
@@ -4680,7 +4687,7 @@ class ge extends b {
         received: t.parsedType
       }), v;
     const r = t.parsedType === f.promise ? t.data : Promise.resolve(t.data);
-    return S(r.then((s) => this._def.type.parseAsync(s, {
+    return P(r.then((s) => this._def.type.parseAsync(s, {
       path: t.path,
       errorMap: t.common.contextualErrorMap
     })));
@@ -4691,7 +4698,7 @@ ge.create = (n, e) => new ge({
   typeName: y.ZodPromise,
   ..._(e)
 });
-class $ extends b {
+class F extends b {
   innerType() {
     return this._def.schema;
   }
@@ -4718,7 +4725,7 @@ class $ extends b {
             path: r.path,
             parent: r
           });
-          return c.status === "aborted" ? v : c.status === "dirty" || t.value === "dirty" ? de(c.value) : c;
+          return c.status === "aborted" ? v : c.status === "dirty" || t.value === "dirty" ? le(c.value) : c;
         });
       {
         if (t.value === "aborted")
@@ -4728,7 +4735,7 @@ class $ extends b {
           path: r.path,
           parent: r
         });
-        return o.status === "aborted" ? v : o.status === "dirty" || t.value === "dirty" ? de(o.value) : o;
+        return o.status === "aborted" ? v : o.status === "dirty" || t.value === "dirty" ? le(o.value) : o;
       }
     }
     if (s.type === "refinement") {
@@ -4757,51 +4764,51 @@ class $ extends b {
           path: r.path,
           parent: r
         });
-        if (!ae(i))
+        if (!ie(i))
           return i;
         const o = s.transform(i.value, a);
         if (o instanceof Promise)
           throw new Error("Asynchronous transform encountered during synchronous parse operation. Use .parseAsync instead.");
         return { status: t.value, value: o };
       } else
-        return this._def.schema._parseAsync({ data: r.data, path: r.path, parent: r }).then((i) => ae(i) ? Promise.resolve(s.transform(i.value, a)).then((o) => ({ status: t.value, value: o })) : i);
+        return this._def.schema._parseAsync({ data: r.data, path: r.path, parent: r }).then((i) => ie(i) ? Promise.resolve(s.transform(i.value, a)).then((o) => ({ status: t.value, value: o })) : i);
     w.assertNever(s);
   }
 }
-$.create = (n, e, t) => new $({
+F.create = (n, e, t) => new F({
   schema: n,
   typeName: y.ZodEffects,
   effect: e,
   ..._(t)
 });
-$.createWithPreprocess = (n, e, t) => new $({
+F.createWithPreprocess = (n, e, t) => new F({
   schema: e,
   effect: { type: "preprocess", transform: n },
   typeName: y.ZodEffects,
   ..._(t)
 });
-class F extends b {
+class $ extends b {
   _parse(e) {
-    return this._getType(e) === f.undefined ? S(void 0) : this._def.innerType._parse(e);
+    return this._getType(e) === f.undefined ? P(void 0) : this._def.innerType._parse(e);
   }
   unwrap() {
     return this._def.innerType;
   }
 }
-F.create = (n, e) => new F({
+$.create = (n, e) => new $({
   innerType: n,
   typeName: y.ZodOptional,
   ..._(e)
 });
-class X extends b {
+class te extends b {
   _parse(e) {
-    return this._getType(e) === f.null ? S(null) : this._def.innerType._parse(e);
+    return this._getType(e) === f.null ? P(null) : this._def.innerType._parse(e);
   }
   unwrap() {
     return this._def.innerType;
   }
 }
-X.create = (n, e) => new X({
+te.create = (n, e) => new te({
   innerType: n,
   typeName: y.ZodNullable,
   ..._(e)
@@ -4845,7 +4852,7 @@ class je extends b {
       status: "valid",
       value: a.status === "valid" ? a.value : this._def.catchValue({
         get error() {
-          return new R(r.common.issues);
+          return new M(r.common.issues);
         },
         input: r.data
       })
@@ -4853,7 +4860,7 @@ class je extends b {
       status: "valid",
       value: s.status === "valid" ? s.value : this._def.catchValue({
         get error() {
-          return new R(r.common.issues);
+          return new M(r.common.issues);
         },
         input: r.data
       })
@@ -4900,7 +4907,7 @@ class st extends b {
     return this._def.type;
   }
 }
-class Me extends b {
+class Re extends b {
   _parse(e) {
     const { status: t, ctx: r } = this._processInputParams(e);
     if (r.common.async)
@@ -4910,7 +4917,7 @@ class Me extends b {
           path: r.path,
           parent: r
         });
-        return a.status === "aborted" ? v : a.status === "dirty" ? (t.dirty(), de(a.value)) : this._def.out._parseAsync({
+        return a.status === "aborted" ? v : a.status === "dirty" ? (t.dirty(), le(a.value)) : this._def.out._parseAsync({
           data: a.value,
           path: r.path,
           parent: r
@@ -4933,23 +4940,23 @@ class Me extends b {
     }
   }
   static create(e, t) {
-    return new Me({
+    return new Re({
       in: e,
       out: t,
       typeName: y.ZodPipeline
     });
   }
 }
-class Re extends b {
+class Me extends b {
   _parse(e) {
-    const t = this._def.innerType._parse(e), r = (s) => (ae(s) && (s.value = Object.freeze(s.value)), s);
+    const t = this._def.innerType._parse(e), r = (s) => (ie(s) && (s.value = Object.freeze(s.value)), s);
     return we(t) ? t.then((s) => r(s)) : r(t);
   }
   unwrap() {
     return this._def.innerType;
   }
 }
-Re.create = (n, e) => new Re({
+Me.create = (n, e) => new Me({
   innerType: n,
   typeName: y.ZodReadonly,
   ..._(e)
@@ -4958,7 +4965,7 @@ function it(n, e) {
   const t = typeof n == "function" ? n(e) : typeof n == "string" ? { message: n } : n;
   return typeof t == "string" ? { message: t } : t;
 }
-function Mt(n, e = {}, t) {
+function Rt(n, e = {}, t) {
   return n ? me.create().superRefine((r, s) => {
     var a, i;
     const o = n(r);
@@ -4966,8 +4973,8 @@ function Mt(n, e = {}, t) {
       return o.then((c) => {
         var d, p;
         if (!c) {
-          const A = it(e, r), P = (p = (d = A.fatal) !== null && d !== void 0 ? d : t) !== null && p !== void 0 ? p : !0;
-          s.addIssue({ code: "custom", ...A, fatal: P });
+          const A = it(e, r), S = (p = (d = A.fatal) !== null && d !== void 0 ? d : t) !== null && p !== void 0 ? p : !0;
+          s.addIssue({ code: "custom", ...A, fatal: S });
         }
       });
     if (!o) {
@@ -4977,7 +4984,7 @@ function Mt(n, e = {}, t) {
   }) : me.create();
 }
 const _r = {
-  object: x.lazycreate
+  object: k.lazycreate
 };
 var y;
 (function(n) {
@@ -4985,15 +4992,15 @@ var y;
 })(y || (y = {}));
 const br = (n, e = {
   message: `Input not instance of ${n.name}`
-}) => Mt((t) => t instanceof n, e), Nt = D.create, Lt = H.create, wr = ze.create, Er = K.create, Zt = Ee.create, xr = ie.create, kr = $e.create, Tr = xe.create, Ar = ke.create, Ir = me.create, Cr = ne.create, Pr = W.create, Sr = Fe.create, Or = U.create, jr = x.create, Rr = x.strictCreate, Mr = Te.create, Nr = Je.create, Lr = Ae.create, Zr = z.create, Dr = Ie.create, Ur = Be.create, $r = oe.create, Fr = fe.create, Br = Ce.create, zr = Pe.create, Vr = Q.create, Jr = Se.create, qr = ge.create, ot = $.create, Gr = F.create, Wr = X.create, Yr = $.createWithPreprocess, Hr = Me.create, Kr = () => Nt().optional(), Qr = () => Lt().optional(), Xr = () => Zt().optional(), es = {
+}) => Rt((t) => t instanceof n, e), Nt = D.create, Lt = Q.create, wr = ze.create, Er = X.create, Zt = Ee.create, xr = oe.create, kr = Fe.create, Tr = xe.create, Ar = ke.create, Ir = me.create, Cr = ae.create, Sr = K.create, Pr = $e.create, Or = U.create, jr = k.create, Mr = k.strictCreate, Rr = Te.create, Nr = qe.create, Lr = Ae.create, Zr = z.create, Dr = Ie.create, Ur = Be.create, Fr = ce.create, $r = fe.create, Br = Ce.create, zr = Se.create, Vr = ee.create, Jr = Pe.create, qr = ge.create, ot = F.create, Gr = $.create, Wr = te.create, Yr = F.createWithPreprocess, Kr = Re.create, Hr = () => Nt().optional(), Qr = () => Lt().optional(), Xr = () => Zt().optional(), es = {
   string: (n) => D.create({ ...n, coerce: !0 }),
-  number: (n) => H.create({ ...n, coerce: !0 }),
+  number: (n) => Q.create({ ...n, coerce: !0 }),
   boolean: (n) => Ee.create({
     ...n,
     coerce: !0
   }),
-  bigint: (n) => K.create({ ...n, coerce: !0 }),
-  date: (n) => ie.create({ ...n, coerce: !0 })
+  bigint: (n) => X.create({ ...n, coerce: !0 }),
+  date: (n) => oe.create({ ...n, coerce: !0 })
 }, ts = v;
 var u = /* @__PURE__ */ Object.freeze({
   __proto__: null,
@@ -5001,65 +5008,65 @@ var u = /* @__PURE__ */ Object.freeze({
   setErrorMap: Yt,
   getErrorMap: Ze,
   makeIssue: De,
-  EMPTY_PATH: Ht,
+  EMPTY_PATH: Kt,
   addIssueToContext: h,
   ParseStatus: C,
   INVALID: v,
-  DIRTY: de,
-  OK: S,
+  DIRTY: le,
+  OK: P,
   isAborted: He,
-  isDirty: Ke,
-  isValid: ae,
+  isDirty: Qe,
+  isValid: ie,
   isAsync: we,
   get util() {
     return w;
   },
   get objectUtil() {
-    return Ye;
+    return Ke;
   },
   ZodParsedType: f,
   getParsedType: J,
   ZodType: b,
   datetimeRegex: jt,
   ZodString: D,
-  ZodNumber: H,
-  ZodBigInt: K,
+  ZodNumber: Q,
+  ZodBigInt: X,
   ZodBoolean: Ee,
-  ZodDate: ie,
-  ZodSymbol: $e,
+  ZodDate: oe,
+  ZodSymbol: Fe,
   ZodUndefined: xe,
   ZodNull: ke,
   ZodAny: me,
-  ZodUnknown: ne,
-  ZodNever: W,
-  ZodVoid: Fe,
+  ZodUnknown: ae,
+  ZodNever: K,
+  ZodVoid: $e,
   ZodArray: U,
-  ZodObject: x,
+  ZodObject: k,
   ZodUnion: Te,
-  ZodDiscriminatedUnion: Je,
+  ZodDiscriminatedUnion: qe,
   ZodIntersection: Ae,
   ZodTuple: z,
   ZodRecord: Ie,
   ZodMap: Be,
-  ZodSet: oe,
+  ZodSet: ce,
   ZodFunction: fe,
   ZodLazy: Ce,
-  ZodLiteral: Pe,
-  ZodEnum: Q,
-  ZodNativeEnum: Se,
+  ZodLiteral: Se,
+  ZodEnum: ee,
+  ZodNativeEnum: Pe,
   ZodPromise: ge,
-  ZodEffects: $,
-  ZodTransformer: $,
-  ZodOptional: F,
-  ZodNullable: X,
+  ZodEffects: F,
+  ZodTransformer: F,
+  ZodOptional: $,
+  ZodNullable: te,
   ZodDefault: Oe,
   ZodCatch: je,
   ZodNaN: ze,
   BRAND: vr,
   ZodBranded: st,
-  ZodPipeline: Me,
-  ZodReadonly: Re,
-  custom: Mt,
+  ZodPipeline: Re,
+  ZodReadonly: Me,
+  custom: Rt,
   Schema: b,
   ZodSchema: b,
   late: _r,
@@ -5075,7 +5082,7 @@ var u = /* @__PURE__ */ Object.freeze({
   discriminatedUnion: Nr,
   effect: ot,
   enum: Vr,
-  function: Fr,
+  function: $r,
   instanceof: br,
   intersection: Lr,
   lazy: Br,
@@ -5083,7 +5090,7 @@ var u = /* @__PURE__ */ Object.freeze({
   map: Ur,
   nan: wr,
   nativeEnum: Jr,
-  never: Pr,
+  never: Sr,
   null: Ar,
   nullable: Wr,
   number: Lt,
@@ -5091,25 +5098,25 @@ var u = /* @__PURE__ */ Object.freeze({
   oboolean: Xr,
   onumber: Qr,
   optional: Gr,
-  ostring: Kr,
-  pipeline: Hr,
+  ostring: Hr,
+  pipeline: Kr,
   preprocess: Yr,
   promise: qr,
   record: Dr,
-  set: $r,
-  strictObject: Rr,
+  set: Fr,
+  strictObject: Mr,
   string: Nt,
   symbol: kr,
   transformer: ot,
   tuple: Zr,
   undefined: Tr,
-  union: Mr,
+  union: Rr,
   unknown: Cr,
-  void: Sr,
+  void: Pr,
   NEVER: ts,
   ZodIssueCode: l,
   quotelessJson: Wt,
-  ZodError: R
+  ZodError: M
 });
 const ct = u.object({
   prompt: u.string().default(""),
@@ -5121,7 +5128,7 @@ const ct = u.object({
   disable_safety_checker: u.boolean().default(!1),
   go_fast: u.boolean().default(!1)
 });
-class rs extends Ve {
+class rs extends Je {
   constructor() {
     super("flux-schnell");
   }
@@ -5136,7 +5143,7 @@ class rs extends Ve {
     });
   }
   async parseResult(e) {
-    return Array.isArray(e) ? Promise.all(e.map((t) => new se().fromAny(t))) : await new se().fromAny(e);
+    return Array.isArray(e) ? Promise.all(e.map((t) => new W().fromAny(t))) : await new W().fromAny(e);
   }
   /**
    * Generate an image from a text prompt
@@ -5171,7 +5178,7 @@ class ss {
     this.thoughts = e.substring(t + 7, r), this.answer = e.substring(r + 8);
   }
 }
-class ns extends Ve {
+class ns extends Je {
   constructor() {
     super("deepseek-r1");
   }
@@ -5211,7 +5218,7 @@ const be = u.union([
   u.null(),
   u.instanceof(Blob),
   u.instanceof(File),
-  u.instanceof(se)
+  u.instanceof(W)
   // Add Buffer type for Node.js environment
   // z.instanceof(Buffer)
 ]).default(null), lt = u.object({
@@ -5230,7 +5237,7 @@ const be = u.union([
   include_audio: u.boolean().optional().default(!0),
   enhance_face_model: u.string().optional().default("gpen_bfr_512")
 });
-class as extends Ve {
+class as extends Je {
   constructor() {
     super("face2face");
   }
@@ -5261,7 +5268,7 @@ class as extends Ve {
     });
   }
   async parseResult(e) {
-    return Array.isArray(e) ? Promise.all(e.map((t) => new k().fromAny(t))) : await new k().fromAny(e);
+    return Array.isArray(e) ? Promise.all(e.map((t) => new x().fromAny(t))) : await new x().fromAny(e);
   }
   /**
    * Swap faces between a source image and target image
@@ -5271,7 +5278,7 @@ class as extends Ve {
    * @returns TrackedJob that resolves to the processed image
    */
   async swapImg2Img(e, t, r) {
-    const s = this.getEndpoint("swap-img-to-img"), a = await se.create(e), i = await se.create(t);
+    const s = this.getEndpoint("swap-img-to-img"), a = await W.create(e), i = await W.create(t);
     if (!a || !i)
       throw new Error("Invalid source or target image");
     let o = lt.parse(r || {}), c = ut.parse({ source_img: a, target_img: i }), d = { ...o, ...c };
@@ -5284,7 +5291,7 @@ class as extends Ve {
    * @returns TrackedJob that resolves to the processed image
    */
   async swap(e, t) {
-    const r = this.getEndpoint("swap"), s = await k.create(e);
+    const r = this.getEndpoint("swap"), s = await x.create(e);
     if (!s)
       throw new Error("Invalid media file");
     const o = { ...ht.parse(t || {}), ...{ media: s } };
@@ -5297,7 +5304,7 @@ class as extends Ve {
    * @returns TrackedJob that resolves to the operation result
    */
   async addFace(e, t, r = !0) {
-    const s = this.getEndpoint("add_face"), a = await se.create(e);
+    const s = this.getEndpoint("add_face"), a = await W.create(e);
     if (!a)
       throw new Error("Invalid image file");
     const i = ft.parse({
@@ -5316,7 +5323,7 @@ class as extends Ve {
    */
   async swapVideo(e, t, r) {
     const s = this.getEndpoint("swap_video");
-    if (!await It.create(e))
+    if (!await Ve.create(e))
       throw new Error("Invalid video file");
     const i = pt.parse({
       face_name: t,
@@ -5330,8 +5337,8 @@ const nt = u.union([
   u.null(),
   u.instanceof(Blob),
   u.instanceof(File),
-  u.instanceof(k),
-  u.instanceof(ee)
+  u.instanceof(x),
+  u.instanceof(q)
   // Add Buffer type for Node.js environment
   // z.instanceof(Buffer)
 ]).default(null), mt = u.object({
@@ -5356,17 +5363,17 @@ const nt = u.union([
 }), yt = u.object({
   voice: nt
 }), vt = u.object({
-  voice_name: u.string().optional(),
+  voice_name: u.string().optional().default(""),
   save: u.boolean().optional().default(!1)
 }), _t = u.object({
   audio_file: nt
 }), bt = u.object({
-  voice_name: u.string().optional(),
+  voice_name: u.string().optional().default(""),
   temp: u.number().optional().default(0.7)
 }), wt = u.object({
   audio_file: nt
 });
-class is extends Ve {
+class is extends Je {
   constructor() {
     super("speechcraft");
   }
@@ -5397,7 +5404,7 @@ class is extends Ve {
     });
   }
   async parseResult(e) {
-    return Array.isArray(e) ? Promise.all(e.map((t) => new ee().fromAny(t))) : await new ee().fromAny(e);
+    return Array.isArray(e) ? Promise.all(e.map((t) => new q().fromAny(t))) : await new q().fromAny(e);
   }
   /**
    * Generate realistic sounding voice from a written text.
@@ -5420,7 +5427,7 @@ class is extends Ve {
    * @returns TrackedJob that resolves to the generated audio
    */
   async text2voiceWithEmbedding(e, t, r) {
-    const s = this.getEndpoint("text2voice_with_embedding"), a = await k.create(t);
+    const s = this.getEndpoint("text2voice_with_embedding"), a = await x.create(t);
     if (!a)
       throw new Error("Invalid voice embedding file");
     const i = gt.parse({
@@ -5443,12 +5450,14 @@ class is extends Ve {
     if (Array.isArray(e)) {
       if (e.length === 0)
         throw new Error("Empty audio array provided");
-      s = await ee.create(e[0]);
+      console.log("For now creating an embedding of multiple audio files is not supported. Only the first audio file will be used."), s = await q.create(e[0]);
     } else
-      s = await ee.create(e);
+      s = await q.create(e);
     if (!s)
       throw new Error("Invalid audio file");
-    const a = vt.parse(t || {}), i = _t.parse({ audio_file: s }), o = { ...a, ...i };
+    const a = vt.parse(t || {});
+    (!a.voice_name || a.voice_name.length === 0) && (a.voice_name = `new_speaker_${Math.random().toString(36).substring(2, 8)}`);
+    const i = _t.parse({ audio_file: s }), o = { ...a, ...i };
     return this.submitTrackedJob(r, o, this.parseResult);
   }
   /**
@@ -5459,11 +5468,11 @@ class is extends Ve {
    * @returns TrackedJob that resolves to the converted audio
    */
   async voice2voice(e, t, r) {
-    const s = this.getEndpoint("voice2voice"), a = await ee.create(e);
+    const s = this.getEndpoint("voice2voice"), a = await q.create(e);
     if (!a)
       throw new Error("Invalid audio file");
     let i = { ...r };
-    t && (typeof t != typeof k && typeof t == "string" && !t.includes("/") && !t.includes("\\") ? i.voice_name = t : t = await this.voice2embedding(t));
+    typeof t == "string" && t.length > 0 ? i.voice_name = t : t instanceof x ? t = await this.voice2embedding(t, { voice_name: i.voice_name }) : i.voice_name = "hermine";
     const o = bt.parse(i), c = wt.parse({ audio_file: a }), d = { ...o, ...c };
     return this.submitTrackedJob(s, d, this.parseResult);
   }
@@ -5474,7 +5483,7 @@ I.registerClientType("face2face", as);
 I.registerClientType("speechcraft", is);
 class os {
   constructor(e = {}) {
-    G.update(e);
+    Y.update(e);
   }
   async text2img(e, t = "flux-schnell", r) {
     return I.getClient(t).text2img(e, r);
@@ -5504,21 +5513,22 @@ class os {
 class Dt extends os {
   constructor(t = {}) {
     super(t);
-    g(this, "requestHandler");
-    g(this, "jobManager");
-    this.requestHandler = new rt(), this.jobManager = Le.getInstance(this.requestHandler);
+    g(this, "_jobManager");
+  }
+  get jobManager() {
+    return this._jobManager || (this._jobManager = Le.getInstance()), this._jobManager;
   }
   /**
    * Set the API key globally
    */
   setApiKey(t) {
-    G.update({ apiKey: t });
+    Y.update({ apiKey: t });
   }
   /**
    * Set the base URL globally
    */
   setBaseUrl(t) {
-    G.update({ baseUrl: t });
+    Y.update({ baseUrl: t });
   }
   /**
    * Get a list of all active jobs
@@ -5544,9 +5554,9 @@ class Dt extends os {
     return this.jobManager.cancelJob(t);
   }
 }
-const Xe = new Dt();
-typeof window < "u" && (window.socaity = Xe);
-typeof module < "u" && typeof module.exports < "u" && (module.exports = { socaity: Xe, SocaitySDK: Dt, APIClientFactory: I }, module.exports.default = Xe);
+const et = new Dt();
+typeof window < "u" && (window.socaity = et);
+typeof module < "u" && typeof module.exports < "u" && (module.exports = { socaity: et, SocaitySDK: Dt, APIClientFactory: I }, module.exports.default = et);
 typeof process < "u" && process.on("uncaughtException", (n) => {
   if (n.name === "ApiKeyError")
     console.error(`${n.name}: ${n.message}`), process.exit(1);
@@ -5555,12 +5565,12 @@ typeof process < "u" && process.on("uncaughtException", (n) => {
 });
 export {
   I as APIClientFactory,
-  ee as AudioFile,
-  k as MediaFile,
-  ue as MediaFileFactory,
+  q as AudioFile,
+  x as MediaFile,
+  ne as MediaFileFactory,
   Dt as SocaitySDK,
   is as SpeechCraft,
-  It as VideoFile,
-  Xe as socaity
+  Ve as VideoFile,
+  et as socaity
 };
 //# sourceMappingURL=socaity.es.js.map

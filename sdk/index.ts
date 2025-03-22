@@ -1,8 +1,8 @@
 export { SpeechCraft } from './api';
+import { MediaFile } from '@socaity/media-toolkit';
 import { SocaitySDK, APIClientFactory } from './core';
 
-export { MediaFile, AudioFile, VideoFile, MediaFileFactory } from 'media-toolkit';
-
+export { MediaFile, AudioFile, VideoFile, MediaFileFactory } from '@socaity/media-toolkit'
 
 // Create singleton instance
 const socaity = new SocaitySDK();

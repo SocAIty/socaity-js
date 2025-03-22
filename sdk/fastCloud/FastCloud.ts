@@ -1,5 +1,5 @@
 // src/FastCloud.ts
-import { MediaFile } from 'media-toolkit';
+import { MediaFile } from '@socaity/media-toolkit'
 
 /**
  * Configuration interface for FastCloud
@@ -27,15 +27,16 @@ export class FastCloud {
     this.apiKey = config.apiKey;
   }
 
+  public setApiKey(apiKey: string): void {
+    this.apiKey = apiKey;
+  }
+
   /**
    * Get authentication headers for requests
    * @returns Headers object with authentication
    */
   private getAuthHeaders(): Record<string, string> {
-    return {
-      'Authorization': `Bearer ${this.apiKey}`,
-      'Content-Type': 'application/json'
-    };
+    return { 'Authorization': `Bearer ${this.apiKey}`};
   }
 
   /**
@@ -43,13 +44,23 @@ export class FastCloud {
    * @param response Response from the upload endpoint
    * @returns Array of temporary upload URLs
    */
-  private async processUploadResponse(response: Response): Promise<string[]> {
+  private async processUploadResponse(response: Response): Promise<Array<string>> {
+    if (response.status === 401) {
+      throw new Error('Unauthorized: Invalid API key');
+    }
+    
     if (!response.ok) {
       throw new Error(`Failed to get temporary upload URL: ${response.status} ${response.statusText}`);
     }
     
-    const data = await response.json();
-    return Array.isArray(data) ? data : [data];
+    try {
+      const urlsText = await response.text();
+      const urls = JSON.parse(urlsText);
+      return Array.isArray(urls) ? urls : [urls];
+    } catch (e) {
+      console.error('Error parsing response:', e);
+      throw new Error('Failed to parse response body as JSON');
+    }
   }
 
   /**
@@ -78,18 +89,23 @@ export class FastCloud {
   /**
    * Upload a single file
    * @param file File to upload
-   * @returns URL of the uploaded file
+   * @returns the URLs of the uploaded files. (If one file is uploaded, the return value is an array with one URL)
    */
-  async upload(file: MediaFile | MediaFile[]): Promise<string | string[]> {
+  async upload(file: MediaFile | MediaFile[]): Promise<string[]> {
     const files = Array.isArray(file) ? file : [file];
     
     // Get file extensions if available
     const extensions = files.map(f => f.extension).filter(ext => ext !== null) as string[];
     
+    const headers = {
+      'Content-Type': 'application/json',
+      ...this.getAuthHeaders()
+    }
+
     // Request temporary upload URLs
     const response = await fetch(this.uploadEndpoint, {
       method: 'POST',
-      headers: this.getAuthHeaders(),
+      headers: headers,
       body: JSON.stringify({ 
         n_files: files.length, 
         file_extensions: extensions.length > 0 ? extensions : undefined 
@@ -109,7 +125,7 @@ export class FastCloud {
     await Promise.all(uploadPromises);
     
     // Return URLs
-    return files.length === 1 ? sasUrls[0] : sasUrls;
+    return sasUrls;
   }
 
   /**

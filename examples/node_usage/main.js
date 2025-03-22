@@ -43,13 +43,13 @@ async function test_voice2voice() {
 
 //let job1 = test_chat_model();
 
-let job3 = test_img_generation();
+//let job3 = test_img_generation();
 //let job4 = test_text2voice();
-//let job5 = test_voice2voice();
+let job5 = test_voice2voice();
 //let job2 = test_face2face();
 
 //await job2;
-await job3;
+await job5;
 // await job4;
 //await job5;
 

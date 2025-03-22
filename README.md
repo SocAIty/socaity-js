@@ -12,8 +12,6 @@ With a lightweight footprint (**UMD ~25KB, ES ~30KB**), this SDK lets you seamle
 
 A complete list of all models can be found [here](https://www.socaity.ai/APIs/Overview).
 
-
-
 ## 🚀 Why Use the Socaity SDK?
 - **One-liner AI calls** – No need to handle raw API requests.
 - **Asynchronous & performant** – Optimized for parallel processing.
@@ -53,7 +51,13 @@ async function chatWithAI() {
 }
 ```
 
-### 4️⃣ Face Swapping Made Easy
+### 3️⃣ Text-To-Speech
+
+
+### 4️⃣ Voice-Cloning
+
+
+### 4️⃣ Face Swapping and DeepFakes
 ```typescript
 async function swapFaces() {
   const result = await socaity.swapImg2Img("data/source.jpg", "data/target.jpg");
