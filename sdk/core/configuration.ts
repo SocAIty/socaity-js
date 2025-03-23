@@ -27,7 +27,7 @@ export class Configuration implements IConfig {
 
   private constructor(config: Partial<IConfig> = {}) {
     this.apiKey = config.apiKey;
-    this.baseUrl = "https://api.socaity.ai/v0"
+    this.baseUrl = "http://localhost:8000/v0" //"https://api.socaity.ai/v0"
     this.pollInterval = config.pollInterval || 5000;
     this.maxRetries = config.maxRetries || 3;
   }

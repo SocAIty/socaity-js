@@ -12,7 +12,7 @@ const H = class H {
     g(this, "baseUrl");
     g(this, "pollInterval");
     g(this, "maxRetries");
-    this.apiKey = e.apiKey, this.baseUrl = "https://api.socaity.ai/v0", this.pollInterval = e.pollInterval || 5e3, this.maxRetries = e.maxRetries || 3;
+    this.apiKey = e.apiKey, this.baseUrl = "http://localhost:8000/v0", this.pollInterval = e.pollInterval || 5e3, this.maxRetries = e.maxRetries || 3;
   }
   /**
    * Get the global configuration instance

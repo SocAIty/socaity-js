@@ -28,41 +28,65 @@ npm install socaity
 
 ## Quick Start
 
-### 1️⃣ Import the SDK
+### 🔑 Import the SDK
 ```typescript
 import { socaity } from "socaity";
 socaity.setApiKey('sk...'); // we recommend settting the API key with environment variables. 
 ```
 Register and [get your API key](https://www.socaity.ai/signinup?page_state=0)
 
-### 2️⃣ Generate an AI Image
+### 💬 AI Chat with SOTA LLMs Models
+
+This will use the SOTA DeepSeek-R1 to create your response.
 ```typescript
-async function generateImage() {
-  const images = await socaity.text2img("A futuristic city at sunset", "flux-schnell", { num_outputs: 1 });
-  await images[0].save("output/futuristic_city.jpg");
-}
+const response = await socaity.chat("Explain why an SDK is better than direct API calls.");
+```
+To use a different model like llama3 just add a second parameter as model name.
+
+### 🖼️ Generate an AI Image
+
+```typescript
+const images = await socaity.text2img("A futuristic city at sunset", "flux-schnell", { num_outputs: 1 });
+await images[0].save("output/futuristic_city.jpg");
 ```
 
-### 3️⃣ AI Chat with SOTA LLMs Models
+
+### 🗣️ Text-To-Speech
+
 ```typescript
-async function chatWithAI() {
-  const response = await socaity.chat("Explain why an SDK is better than direct API calls.");
-  console.log(response);
-}
+const audio = await socaity.text2voice("Hello, welcome to Socaity!");
+await audio.save("output/welcome_message.mp3");
 ```
 
-### 3️⃣ Text-To-Speech
+### 🎤 Voice-Cloning
 
+Use two audio-files and copy the voice of the source to the other one.
+Internally this will create an embedding first.
 
-### 4️⃣ Voice-Cloning
-
-
-### 4️⃣ Face Swapping and DeepFakes
 ```typescript
-async function swapFaces() {
-  const result = await socaity.swapImg2Img("data/source.jpg", "data/target.jpg");
-  await result.save("output/face_swap.jpg");
-}
+const clonedVoice = await socaity.voice2voice("data/input_voice.mp3", "data/source_voice.mp3");
+await clonedVoice.save("output/cloned_voice.mp3");
+```
+
+Or do it more efficient by creating and reusing an embedding by leveraging the power of [SpeechCraft](https://github.com/SocAIty/SpeechCraft).
+
+```typescript
+import { SpeechCraft } from 'socaity'
+
+// create embedding
+const speechCraft = new SpeechCraft();
+const embedding = await speechCraft.voice2embedding("data/source_voice.mp3");
+await embedding.save("output/source_embedding.npz");
+
+// reuse embedding
+const clonedVoice = await speechCraft.voice2voice("data/input_voice.mp3", "output/source_embedding.npz");
+await clonedVoice.save("output/cloned_voice.mp3");
+```
+
+### 🖼️ Face Swapping and DeepFakes
+```typescript
+const result = await socaity.swapImg2Img("data/source.jpg", "data/target.jpg");
+await result.save("output/face_swap.jpg");
 ```
 
 ## Advanced Usage
