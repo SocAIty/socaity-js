@@ -20,6 +20,6 @@ export interface IVoice2Voice extends IAPIClient {
    * @param options - Additional options for the request
    * @returns TrackedJob that resolves to the cloned voice.
     */
-  voice2voice(audio: AudioFile | Array<AudioFile> | string | Array<string>, targetVoice?: AudioFile | string, options?: Record<string, any>): Promise<TrackedJob<AudioFile | any>>;
+  voice2voice(audio: AudioFile | Array<AudioFile> | string | Array<string>, targetVoice?: MediaFile | AudioFile | string, options?: Record<string, any>): Promise<TrackedJob<MediaFile | any>>;
 }
 

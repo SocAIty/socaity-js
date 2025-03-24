@@ -1,6 +1,6 @@
 {
   "name": "socaity",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "description": "SDK for Generative AI. Build AI-powered applications with ease",
   "author": "Socaity.ai",
@@ -41,7 +41,7 @@
     "prod": "npm run build && npm run build:types"
   },
   "dependencies": {
-    "@socaity/media-toolkit": "^0.0.0",
+    "@socaity/media-toolkit": "^0.0.1",
     "zod": "^3.24.2"
   },
   "devDependencies": {

@@ -53,7 +53,7 @@ export const zVoice2EmbeddingFileParams = z.object({
 
 // Define the parameter schemas for voice2voice endpoint
 export const zVoice2VoiceParams = z.object({
-  voice_name: z.string().optional().default(''),
+  voice_name: z.union([z.string(), z.instanceof(MediaFile)]).optional().default(''),
   temp: z.number().optional().default(0.7)
 });
 

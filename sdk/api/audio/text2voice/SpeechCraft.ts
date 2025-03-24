@@ -2,7 +2,7 @@ import { IText2Voice } from './IText2Voice';
 import { IVoice2Voice } from './IVoice2Voice';
 import { ApiClient } from '../../../core/web/APIClient';
 import { TrackedJob } from '../../../core/job/TrackedJob';
-import { MediaFile, AudioFile } from '@socaity/media-toolkit'
+import { MediaFile, AudioFile, MediaFileFactory, isValidFilePath } from '@socaity/media-toolkit'
 import { z } from 'zod';
 
 import {
@@ -124,7 +124,7 @@ export class SpeechCraft extends ApiClient implements IText2Voice, IVoice2Voice 
   async voice2embedding(
     audio: MediaFile | AudioFile | string | Array<MediaFile | AudioFile | string>,
     options?: Partial<z.infer<typeof zVoice2EmbeddingParams>>
-  ): Promise<TrackedJob<AudioFile>> {
+  ): Promise<TrackedJob<MediaFile>> {
     const endpoint = this.getEndpoint('voice2embedding');
 
     let audioFile: MediaFile | AudioFile;
@@ -153,9 +153,13 @@ export class SpeechCraft extends ApiClient implements IText2Voice, IVoice2Voice 
     }
 
     const fileParams = zVoice2EmbeddingFileParams.parse({ audio_file: audioFile });
-    
     const params = { ...queryParams, ...fileParams };
-    return this.submitTrackedJob(endpoint, params, this.parseResult);
+    
+    const parse_embedding = async (full_output: any) => {
+      return await new MediaFile().fromAny(full_output);
+    }
+
+    return this.submitTrackedJob(endpoint, params, parse_embedding);
   }
 
   /**
@@ -167,7 +171,7 @@ export class SpeechCraft extends ApiClient implements IText2Voice, IVoice2Voice 
    */
   async voice2voice(
     audio: AudioFile | Array<AudioFile> | string | Array<string>,
-    targetVoice?: MediaFile | AudioFile | string,
+    targetVoice?: string | MediaFile | AudioFile,
     options?: Partial<z.infer<typeof zVoice2VoiceParams>>
   ): Promise<TrackedJob<AudioFile>> {
     const endpoint = this.getEndpoint('voice2voice');
@@ -180,12 +184,19 @@ export class SpeechCraft extends ApiClient implements IText2Voice, IVoice2Voice 
     let queryParams: Partial<z.infer<typeof zVoice2VoiceParams>> = { ...options };
 
     if (typeof targetVoice === 'string' && targetVoice.length > 0) {
+      if (await isValidFilePath(targetVoice)) {
+        targetVoice = await MediaFileFactory.create(targetVoice);
+      }
       queryParams.voice_name = targetVoice;
     }
     else if (targetVoice instanceof MediaFile) {
-      // We need to get the embedding first
-      const sourceEmbedding = await this.voice2embedding(targetVoice, { voice_name: queryParams.voice_name });
-      targetVoice = sourceEmbedding;
+      if (targetVoice instanceof AudioFile) {
+        // We need to get the embedding first
+        const vn = (queryParams.voice_name ? queryParams.voice_name: '') as string
+        const sourceEmbedding = await this.voice2embedding(targetVoice, { voice_name: vn });
+        targetVoice = sourceEmbedding;
+      }
+      queryParams.voice_name = targetVoice;
     }
     else {
       queryParams.voice_name = 'hermine';

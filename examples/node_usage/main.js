@@ -1,4 +1,4 @@
-import { socaity, SpeechCraft } from "../../dist/socaity.es.js";
+import { MediaFileFactory, socaity, SpeechCraft } from "../../dist/socaity.es.js";
 
 // // Load environment variables from the .env file
 import dotenv from 'dotenv';
@@ -34,18 +34,23 @@ async function test_text2voice() {
 
 async function test_voice2voice() {
     const genAI = new SpeechCraft();
-    let embedding = await genAI.voice2embedding("examples/data/voice_clone_test_voice_2.wav");
-    embedding.save("examples/output/voice_embedding.npz");
-    let result = await genAI.voice2voice("examples/data/voice_clone_test_voice_1.wav.mp3", embedding);
+    //let embedding = await genAI.voice2embedding("examples/data/voice_clone_test_voice_2.wav");
+    //await embedding.save("examples/output/voice_embedding.npz");
+    let embedding = await MediaFileFactory.create("examples/output/voice_embedding.npz");
+    
+    let result = await genAI.voice2voice("examples/data/voice_clone_test_voice_1.wav", embedding);
     await result.save("examples/output/voice2voice.mp3");
 }
 
 
-let job1 = test_chat_model();
-let job2 = test_face2face();
-let job3 = test_img_generation();
-let job4 = test_text2voice();
+//let job1 = test_chat_model();
+//let job2 = test_face2face();
+//let job3 = test_img_generation();
+//let job4 = test_text2voice();
 let job5 = test_voice2voice();
+
+//await job4;
+await job5;
 
 // Wait for all jobs to finish
 await Promise.all([job1, job2, job3, job4, job5]);
